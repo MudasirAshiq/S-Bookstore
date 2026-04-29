@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit2, Trash2, LogOut, LayoutGrid, X, Loader2, Image as ImageIcon, BookOpen, Key, Book as BookIcon, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit2, Trash2, LogOut, LayoutGrid, X, Loader2, Image as ImageIcon, BookOpen, Key, Book as BookIcon, Eye, EyeOff, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { fetchBooks, createBook, updateBook, deleteBook } from '../api';
+import { supabase } from '../lib/supabase';
 
 const AdminDashboard = ({ onLogout }) => {
   const [books, setBooks] = useState([]);
@@ -10,8 +10,10 @@ const AdminDashboard = ({ onLogout }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [currentBook, setCurrentBook] = useState(null);
-  const [passwordData, setPasswordData] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
-  const [showPasswords, setShowPasswords] = useState({ old: false, new: false, confirm: false });
+  const [submitting, setSubmitting] = useState(false);
+  const [passwordData, setPasswordData] = useState({ newPassword: '', confirmPassword: '' });
+  const [showPasswords, setShowPasswords] = useState({ new: false, confirm: false });
+  const [imageFile, setImageFile] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     author: '',
@@ -28,10 +30,15 @@ const AdminDashboard = ({ onLogout }) => {
   const loadBooks = async () => {
     try {
       setLoading(true);
-      const data = await fetchBooks();
-      setBooks(data);
+      const { data, error } = await supabase
+        .from('books')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setBooks(data || []);
     } catch (err) {
-      toast.error('Failed to load books');
+      toast.error('Failed to load books: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -50,38 +57,105 @@ const AdminDashboard = ({ onLogout }) => {
     setIsFormOpen(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this book?')) {
+  const handleDelete = async (book) => {
+    if (window.confirm(`Are you sure you want to delete "${book.title}"?`)) {
       try {
-        await deleteBook(id);
+        // 1. Delete from Database
+        const { error: dbError } = await supabase
+          .from('books')
+          .delete()
+          .eq('id', book.id);
+
+        if (dbError) throw dbError;
+
+        // 2. Try to delete from Storage if it's a supabase URL
+        if (book.image_url && book.image_url.includes('storage/v1/object/public/books')) {
+          const fileName = book.image_url.split('/').pop();
+          await supabase.storage.from('books').remove([fileName]);
+        }
+
         toast.success('Book deleted successfully');
         loadBooks();
       } catch (err) {
-        toast.error('Failed to delete book');
+        toast.error('Failed to delete: ' + err.message);
       }
+    }
+  };
+
+  const handleFileUpload = async (file) => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError, data } = await supabase.storage
+        .from('books')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('books')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      toast.error('Error uploading image: ' + error.message);
+      return null;
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
     try {
+      let finalImageUrl = formData.image_url;
+
+      if (imageFile) {
+        toast.loading('Uploading image...', { id: 'upload' });
+        const uploadedUrl = await handleFileUpload(imageFile);
+        if (uploadedUrl) {
+          finalImageUrl = uploadedUrl;
+        }
+        toast.dismiss('upload');
+      }
+
+      const bookData = {
+        title: formData.title,
+        author: formData.author,
+        price: parseFloat(formData.price),
+        discount_percent: parseInt(formData.discount_percent) || 0,
+        image_url: finalImageUrl,
+        description: formData.description
+      };
+
       if (currentBook) {
-        await updateBook(currentBook.id, formData);
+        const { error } = await supabase
+          .from('books')
+          .update(bookData)
+          .eq('id', currentBook.id);
+        if (error) throw error;
         toast.success('Book updated successfully');
       } else {
-        await createBook(formData);
+        const { error } = await supabase
+          .from('books')
+          .insert([bookData]);
+        if (error) throw error;
         toast.success('Book added successfully');
       }
       setIsFormOpen(false);
       resetForm();
       loadBooks();
     } catch (err) {
-      toast.error('Operation failed');
+      toast.error('Operation failed: ' + err.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const resetForm = () => {
     setCurrentBook(null);
+    setImageFile(null);
     setFormData({
       title: '',
       author: '',
@@ -91,17 +165,26 @@ const AdminDashboard = ({ onLogout }) => {
       description: ''
     });
   };
-  const handlePasswordChange = (e) => {
+
+  const handlePasswordChange = async (e) => {
     e.preventDefault();
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast.error("New passwords don't match");
       return;
     }
-    // Actual password persistence (local to browser)
-    localStorage.setItem('admin_password', passwordData.newPassword);
-    toast.success('Password updated successfully!');
-    setIsPasswordModalOpen(false);
-    setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
+    
+    try {
+      const { error } = await supabase.auth.updateUser({ 
+        password: passwordData.newPassword 
+      });
+      if (error) throw error;
+      
+      toast.success('Password updated successfully!');
+      setIsPasswordModalOpen(false);
+      setPasswordData({ newPassword: '', confirmPassword: '' });
+    } catch (error) {
+      toast.error('Failed to update password: ' + error.message);
+    }
   };
 
   return (
@@ -212,7 +295,7 @@ const AdminDashboard = ({ onLogout }) => {
                             <Edit2 size={18} />
                           </button>
                           <button 
-                            onClick={() => handleDelete(book.id)}
+                            onClick={() => handleDelete(book)}
                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           >
                             <Trash2 size={18} />
@@ -261,7 +344,7 @@ const AdminDashboard = ({ onLogout }) => {
                         Edit
                       </button>
                       <button 
-                        onClick={() => handleDelete(book.id)}
+                        onClick={() => handleDelete(book)}
                         className="flex-1 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold transition-all active:scale-95"
                       >
                         Delete
@@ -288,29 +371,10 @@ const AdminDashboard = ({ onLogout }) => {
                 <Key size={32} />
               </div>
               <h3 className="text-2xl font-black text-gray-900">Change Password</h3>
-              <p className="text-gray-500 text-sm mt-1">Update your dashboard security</p>
+              <p className="text-gray-500 text-sm mt-1">Update your Supabase account security</p>
             </div>
 
             <form onSubmit={handlePasswordChange} className="p-10 space-y-6">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Old Password</label>
-                <div className="relative">
-                  <input 
-                    type={showPasswords.old ? "text" : "password"} 
-                    required
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all pr-14"
-                    value={passwordData.oldPassword}
-                    onChange={(e) => setPasswordData({...passwordData, oldPassword: e.target.value})}
-                  />
-                  <button 
-                    type="button"
-                    onClick={() => setShowPasswords({...showPasswords, old: !showPasswords.old})}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary-600 transition-colors p-1"
-                  >
-                    {showPasswords.old ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </div>
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">New Password</label>
                 <div className="relative">
@@ -437,7 +501,7 @@ const AdminDashboard = ({ onLogout }) => {
                       <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                       <input 
                         type="url" 
-                        placeholder="Paste URL"
+                        placeholder="Image URL"
                         className="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all"
                         value={formData.image_url}
                         onChange={(e) => setFormData({...formData, image_url: e.target.value})}
@@ -449,24 +513,14 @@ const AdminDashboard = ({ onLogout }) => {
                         accept="image/*"
                         className="hidden"
                         id="local-upload"
-                        onChange={(e) => {
-                          const file = e.target.files[0];
-                          if (file) {
-                            const reader = new FileReader();
-                            reader.onloadend = () => {
-                              setFormData({...formData, image_url: reader.result});
-                              toast.success('Local image uploaded!');
-                            };
-                            reader.readAsDataURL(file);
-                          }
-                        }}
+                        onChange={(e) => setImageFile(e.target.files[0])}
                       />
                       <label 
                         htmlFor="local-upload"
-                        className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border-2 border-dashed border-gray-200 text-gray-500 font-bold hover:bg-gray-50 cursor-pointer transition-all"
+                        className={`w-full flex items-center justify-center gap-2 py-4 rounded-2xl border-2 border-dashed font-bold cursor-pointer transition-all ${imageFile ? 'border-primary-500 bg-primary-50 text-primary-600' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}
                       >
                         <Plus size={18} />
-                        Upload Local
+                        {imageFile ? imageFile.name : 'Choose File to Upload'}
                       </label>
                     </div>
                   </div>

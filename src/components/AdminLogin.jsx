@@ -1,21 +1,32 @@
 import React, { useState } from 'react';
-import { Lock, User, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
 const AdminLogin = ({ onLogin, onBack }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const storedPassword = localStorage.getItem('admin_password') || 'password123';
+    setLoading(true);
     
-    if (username === 'admin' && password === storedPassword) {
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+      
       toast.success('Login successful!');
       onLogin();
-    } else {
-      toast.error('Invalid credentials');
+    } catch (error) {
+      toast.error(error.message || 'Invalid credentials');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,15 +52,15 @@ const AdminLogin = ({ onLogin, onBack }) => {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Username</label>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input 
-                  type="text" 
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
-                  placeholder="admin"
+                  placeholder="admin@example.com"
                   required
                 />
               </div>
@@ -77,13 +88,17 @@ const AdminLogin = ({ onLogin, onBack }) => {
               </div>
             </div>
 
-            <button type="submit" className="w-full btn-primary py-4 text-lg">
-              Sign In
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full btn-primary py-4 text-lg flex items-center justify-center gap-2"
+            >
+              {loading ? <Loader2 className="animate-spin" /> : 'Sign In'}
             </button>
           </form>
           
           <div className="mt-8 pt-8 border-t border-gray-100 text-center">
-            <p className="text-sm text-gray-400 italic">Hint: admin / password123</p>
+            <p className="text-sm text-gray-400 italic">Sign in with your Supabase credentials</p>
           </div>
         </div>
       </div>

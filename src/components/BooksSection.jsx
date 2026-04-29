@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Loader2, X as ClearIcon } from 'lucide-react';
-import { fetchBooks } from '../api';
+import { supabase } from '../lib/supabase';
 import BookCard from './BookCard';
 
 const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
@@ -14,11 +14,16 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
     const loadBooks = async () => {
       try {
         setLoading(true);
-        const data = await fetchBooks();
-        setBooks(data);
+        const { data, error: sbError } = await supabase
+          .from('books')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (sbError) throw sbError;
+        setBooks(data || []);
       } catch (err) {
         setError('Failed to load books. Please try again later.');
-        console.error(err);
+        console.error('Supabase Error:', err);
       } finally {
         setLoading(false);
       }
