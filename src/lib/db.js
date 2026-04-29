@@ -21,9 +21,17 @@ export const initDb = async () => {
         discount_percent INTEGER DEFAULT 0,
         image_url TEXT,
         description TEXT,
+        category TEXT DEFAULT 'General',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
       )
     `;
+
+    // Try to add category column if it doesn't exist (for existing tables)
+    try {
+      await sql`ALTER TABLE books ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'General'`;
+    } catch (e) {
+      // Column might already exist or table might be being created
+    }
 
     // Create users table for simple auth
     await sql`

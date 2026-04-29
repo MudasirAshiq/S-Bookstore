@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, Loader2, X as ClearIcon, Sparkles } from 'lucide-react';
+import { Search, Filter, Loader2, X as ClearIcon, Sparkles, ArrowRight } from 'lucide-react';
 import { sql } from '../lib/db';
 import BookCard from './BookCard';
 
@@ -9,6 +9,7 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
 
   useEffect(() => {
     const loadBooks = async () => {
@@ -29,13 +30,17 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
     loadBooks();
   }, []);
 
+  const categories = ['All', ...new Set(books.map(b => b.category || 'General'))];
+
   const filteredBooks = books.filter(book => {
     const search = searchTerm.toLowerCase();
-    return (
+    const categoryMatch = activeCategory === 'All' || (book.category || 'General') === activeCategory;
+    const searchMatch = 
       book.title.toLowerCase().includes(search) || 
       book.author.toLowerCase().includes(search) ||
-      (book.description && book.description.toLowerCase().includes(search))
-    );
+      (book.description && book.description.toLowerCase().includes(search));
+    
+    return categoryMatch && searchMatch;
   });
 
   const displayBooks = featured ? filteredBooks.slice(0, 4) : filteredBooks;
@@ -105,6 +110,29 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
           )}
         </div>
 
+        {/* Category Chips */}
+        {!featured && books.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-wrap gap-3 mb-12"
+          >
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all ${
+                  activeCategory === cat 
+                    ? 'bg-primary-600 text-white shadow-lg shadow-primary-200' 
+                    : 'bg-white text-slate-400 hover:text-slate-600 border border-slate-100'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </motion.div>
+        )}
+
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32">
             <div className="relative">
@@ -128,12 +156,12 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
               <Search size={40} />
             </div>
             <h3 className="text-2xl font-black text-slate-900 mb-2">No matches found</h3>
-            <p className="text-slate-400 font-medium">Try adjusting your search terms for "{searchTerm}"</p>
+            <p className="text-slate-400 font-medium">Try adjusting your filters or search terms</p>
             <button 
-              onClick={() => { setSearchTerm(''); }}
+              onClick={() => { setSearchTerm(''); setActiveCategory('All'); }}
               className="mt-8 text-primary-600 font-black hover:text-primary-700 underline underline-offset-8 decoration-2"
             >
-              Clear filters
+              Clear all filters
             </button>
           </motion.div>
         ) : (
