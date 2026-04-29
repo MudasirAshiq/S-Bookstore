@@ -28,18 +28,18 @@ const Contact = () => {
               viewport={{ once: true }}
               className="text-4xl md:text-6xl font-black text-slate-900 mb-8 leading-tight"
             >
-              Let's Start a <span className="text-gradient">Conversation.</span>
+              Let's <span className="text-gradient">Talk.</span>
             </motion.h2>
             <p className="text-lg text-slate-500 mb-12 font-medium leading-relaxed">
-              Have a specific request or looking for a rare title? Our literary consultants are here to assist you with personalized recommendations.
+              Have questions about a book or your order? Our team is here to help you find your next great read.
             </p>
 
             <div className="space-y-8">
               {[
-                { icon: <Mail />, label: 'Inquiries', value: 'curation@sapienbooks.com' },
-                { icon: <Phone />, label: 'Concierge', value: '+91-98100-93952' },
-                { icon: <Clock />, label: 'Consultation Hours', value: 'Mon - Sat: 10:00 - 19:00' },
-                { icon: <MapPin />, label: 'Private Library', value: '166, Asif Ali Road, New Delhi' },
+                { icon: <Mail />, label: 'Email Us', value: 'info@sapienbooks.com' },
+                { icon: <Phone />, label: 'Call Us', value: '+91-98100-93952' },
+                { icon: <Clock />, label: 'Opening Hours', value: 'Mon - Sat: 10:00 - 19:00' },
+                { icon: <MapPin />, label: 'Visit Us', value: '166, Asif Ali Road, New Delhi' },
               ].map((item, i) => (
                 <motion.div 
                   key={i}
@@ -72,13 +72,13 @@ const Contact = () => {
               <div className="bg-primary-50 p-3 rounded-2xl text-primary-600">
                 <MessageSquare size={24} />
               </div>
-              <h3 className="text-2xl font-black text-slate-900">Send a Secure Message</h3>
+              <h3 className="text-2xl font-black text-slate-900">Send Us a Message</h3>
             </div>
 
             <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
               <div className="grid md:grid-cols-2 gap-8">
                 <div>
-                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Identity</label>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Your Name</label>
                   <input 
                     type="text" 
                     className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all font-bold"
@@ -86,7 +86,7 @@ const Contact = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Email Channel</label>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Your Email</label>
                   <input 
                     type="email" 
                     className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all font-bold"
@@ -95,7 +95,7 @@ const Contact = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Inquiry Subject</label>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Subject</label>
                 <input 
                   type="text" 
                   className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all font-bold"
@@ -113,7 +113,7 @@ const Contact = () => {
               <button 
                 className="btn-primary w-full py-5 rounded-2xl text-lg group"
               >
-                <span>Dispatch Message</span>
+                <span>Send Message</span>
                 <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </button>
             </form>

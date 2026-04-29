@@ -119,7 +119,7 @@ const Navbar = ({ onAdminClick, onHomeClick, onCollectionClick }) => {
               className="mt-4 flex items-center justify-center gap-3 bg-primary-600 text-white p-5 rounded-2xl font-black text-lg shadow-xl shadow-primary-200"
             >
               <ShieldCheck size={20} />
-              Admin Portal
+              Admin Login
             </button>
           </motion.div>
         )}

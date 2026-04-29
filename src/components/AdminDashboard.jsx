@@ -116,7 +116,7 @@ const AdminDashboard = ({ onLogout }) => {
         <nav className="flex-grow space-y-2">
           <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary-600 font-bold text-sm">
             <LayoutGrid size={20} />
-            Inventory
+            All Books
           </button>
           <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white font-bold text-sm transition-all">
             <PieChart size={20} />
@@ -177,22 +177,22 @@ const AdminDashboard = ({ onLogout }) => {
         <div className="p-8 max-w-7xl">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
             <div>
-              <h2 className="text-3xl font-black text-slate-900">Collection Overview</h2>
-              <p className="text-slate-500 font-medium mt-1">Manage and monitor your digital library</p>
+              <h2 className="text-3xl font-black text-slate-900">Manage Books</h2>
+              <p className="text-slate-500 font-medium mt-1">Add, edit, or remove books from your store</p>
             </div>
             <button 
               onClick={() => { resetForm(); setIsFormOpen(true); }}
               className="btn-primary"
             >
               <Plus size={20} />
-              Add New Asset
+              Add New Book
             </button>
           </div>
 
           {/* Stats Bar */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-              <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Total Assets</p>
+              <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Total Books</p>
               <p className="text-3xl font-black text-slate-900">{books.length}</p>
             </div>
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
@@ -210,7 +210,7 @@ const AdminDashboard = ({ onLogout }) => {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-32">
               <Loader2 className="w-12 h-12 text-primary-600 animate-spin" />
-              <p className="text-slate-400 font-bold mt-4">Syncing Database...</p>
+              <p className="text-slate-400 font-bold mt-4">Updating List...</p>
             </div>
           ) : (
             <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
@@ -218,10 +218,10 @@ const AdminDashboard = ({ onLogout }) => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-50/50 border-b border-slate-100">
-                      <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Asset Details</th>
-                      <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Classification</th>
+                      <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Book Details</th>
+                      <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Category</th>
                       <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Pricing</th>
-                      <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Operations</th>
+                      <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
@@ -240,7 +240,7 @@ const AdminDashboard = ({ onLogout }) => {
                         </td>
                         <td className="px-8 py-6">
                           <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase tracking-widest">
-                            Literature
+                            Book
                           </span>
                         </td>
                         <td className="px-8 py-6">
@@ -284,8 +284,8 @@ const AdminDashboard = ({ onLogout }) => {
             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden p-10">
                 <div className="text-center mb-8">
                   <div className="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-primary-600"><Key size={32} /></div>
-                  <h3 className="text-2xl font-black text-slate-900">Security Access</h3>
-                  <p className="text-slate-400 font-medium">Rotate your administrative password</p>
+                  <h3 className="text-2xl font-black text-slate-900">Security Settings</h3>
+                  <p className="text-slate-400 font-medium">Change your admin password</p>
                 </div>
                 <form onSubmit={handlePasswordChange} className="space-y-6">
                   {['newPassword', 'confirmPassword'].map((field) => (
@@ -298,7 +298,7 @@ const AdminDashboard = ({ onLogout }) => {
                     </div>
                   ))}
                   <div className="flex flex-col gap-3 pt-4">
-                    <button type="submit" className="btn-primary w-full py-4 rounded-2xl">Execute Update</button>
+                    <button type="submit" className="btn-primary w-full py-4 rounded-2xl">Update Password</button>
                     <button type="button" onClick={() => setIsPasswordModalOpen(false)} className="py-3 text-slate-400 font-bold text-sm">Discard</button>
                   </div>
                 </form>
@@ -311,8 +311,8 @@ const AdminDashboard = ({ onLogout }) => {
             <motion.div initial={{ opacity: 0, y: 100 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 100 }} className="bg-white rounded-[3rem] w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
               <div className="px-10 py-8 border-b border-slate-50 flex justify-between items-center">
                 <div>
-                  <h3 className="text-2xl font-black text-slate-900">{currentBook ? 'Edit Manifest' : 'Register New Asset'}</h3>
-                  <p className="text-slate-400 font-medium text-sm mt-1">Fill in the required telemetry data</p>
+                  <h3 className="text-2xl font-black text-slate-900">{currentBook ? 'Edit Book' : 'Add New Book'}</h3>
+                  <p className="text-slate-400 font-medium text-sm mt-1">Enter the book details below</p>
                 </div>
                 <button onClick={() => setIsFormOpen(false)} className="bg-slate-50 p-3 rounded-2xl text-slate-400 hover:text-slate-900 transition-all">
                   <X size={20} />
@@ -336,8 +336,8 @@ const AdminDashboard = ({ onLogout }) => {
                   </div>
                 </div>
                 <div className="flex gap-4 mt-10">
-                  <button type="button" onClick={() => setIsFormOpen(false)} className="flex-1 py-4 bg-slate-50 text-slate-400 font-black rounded-2xl hover:bg-slate-100 transition-all">Abort Changes</button>
-                  <button type="submit" disabled={submitting} className="flex-[2] btn-primary py-4 rounded-2xl text-lg">{submitting ? <Loader2 className="animate-spin" /> : currentBook ? 'Save Deployment' : 'Launch Asset'}</button>
+                  <button type="button" onClick={() => setIsFormOpen(false)} className="flex-1 py-4 bg-slate-50 text-slate-400 font-black rounded-2xl hover:bg-slate-100 transition-all">Cancel</button>
+                  <button type="submit" disabled={submitting} className="flex-[2] btn-primary py-4 rounded-2xl text-lg">{submitting ? <Loader2 className="animate-spin" /> : currentBook ? 'Save Changes' : 'Add Book'}</button>
                 </div>
               </form>
             </motion.div>

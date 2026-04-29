@@ -26,16 +26,16 @@ const Hero = ({ onBrowseClick }) => {
               className="inline-flex items-center gap-2 bg-primary-50 px-4 py-2 rounded-full mb-8"
             >
               <Sparkles className="text-primary-600 w-4 h-4" />
-              <span className="text-primary-700 text-xs font-black uppercase tracking-widest">Premium Collection 2026</span>
+              <span className="text-primary-700 text-xs font-black uppercase tracking-widest">Our Best Books 2026</span>
             </motion.div>
             
             <h1 className="text-6xl md:text-8xl font-black text-slate-900 leading-[0.95] mb-8 tracking-tighter">
-              Reading <br />
-              <span className="text-gradient">Redefined.</span>
+              Find Your Next <br />
+              <span className="text-gradient">Favorite Story.</span>
             </h1>
             
             <p className="text-xl text-slate-500 mb-10 leading-relaxed max-w-lg font-medium">
-              Explore a curated selection of literature that inspires, educates, and entertains. From rare classics to modern masterpieces.
+              Browse our collection of great books. From old favorites to new hits, we have something for everyone to enjoy.
             </p>
             
             <div className="flex flex-wrap gap-4">
@@ -43,14 +43,14 @@ const Hero = ({ onBrowseClick }) => {
                 onClick={onBrowseClick}
                 className="btn-primary scale-110 sm:scale-100"
               >
-                <span>Explore Collection</span>
+                <span>Browse Books</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
               <button 
                 onClick={() => document.querySelector('#about')?.scrollIntoView({ behavior: 'smooth' })}
                 className="btn-secondary"
               >
-                Our Legacy
+                About Us
               </button>
             </div>
             
@@ -58,7 +58,7 @@ const Hero = ({ onBrowseClick }) => {
               <div className="text-center">
                 <div className="flex justify-center mb-1 text-primary-600"><BookOpen size={20} /></div>
                 <p className="text-2xl font-black text-slate-900">12k+</p>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Titles</p>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Books</p>
               </div>
               <div className="text-center border-x border-slate-100">
                 <div className="flex justify-center mb-1 text-primary-600"><Users size={20} /></div>

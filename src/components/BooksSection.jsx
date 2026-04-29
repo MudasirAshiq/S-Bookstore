@@ -52,7 +52,7 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
               className="flex items-center gap-2 mb-4"
             >
               <div className="h-px w-8 bg-primary-600" />
-              <span className="text-primary-600 font-black text-xs uppercase tracking-[0.2em]">{featured ? 'New Arrivals' : 'The Library'}</span>
+              <span className="text-primary-600 font-black text-xs uppercase tracking-[0.2em]">{featured ? 'New Books' : 'Our Collection'}</span>
             </motion.div>
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
@@ -60,7 +60,7 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
               viewport={{ once: true }}
               className="text-4xl md:text-6xl font-black text-slate-900 mb-6 leading-tight"
             >
-              {featured ? <>Curated <span className="text-gradient">Masterpieces.</span></> : 'Explore Our Collection'}
+              {featured ? <>Our Top <span className="text-gradient">Picks.</span></> : 'Browse All Books'}
             </motion.h2>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -70,8 +70,8 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
               className="text-lg text-slate-500 font-medium leading-relaxed"
             >
               {featured 
-                ? 'A handpicked selection of our most exquisite and sought-after titles.' 
-                : 'From timeless classics to modern-day sensations, find your next journey here.'}
+                ? 'Check out some of our newest and most popular books.' 
+                : 'From fun stories to interesting facts, find the perfect book to read next.'}
             </motion.p>
           </div>
 
@@ -111,7 +111,7 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
               <div className="w-20 h-20 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin" />
               <Sparkles className="absolute inset-0 m-auto text-primary-600 w-6 h-6 animate-pulse" />
             </div>
-            <p className="text-slate-400 font-black text-xs uppercase tracking-widest mt-8">Curating Excellence...</p>
+            <p className="text-slate-400 font-black text-xs uppercase tracking-widest mt-8">Loading Books...</p>
           </div>
         ) : error ? (
           <div className="bg-red-50 text-red-600 p-8 rounded-[2rem] text-center border border-red-100 max-w-md mx-auto shadow-xl shadow-red-100/50">

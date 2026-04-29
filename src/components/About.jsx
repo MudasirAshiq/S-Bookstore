@@ -4,10 +4,10 @@ import { Book, Award, Users, ShieldCheck, Sparkles } from 'lucide-react';
 
 const About = () => {
   const stats = [
-    { icon: <Book />, label: 'Literary Genres', value: '50+' },
+    { icon: <Book />, label: 'Book Genres', value: '50+' },
     { icon: <Award />, label: 'Best Sellers', value: '200+' },
-    { icon: <Users />, label: 'Global Readers', value: '15k+' },
-    { icon: <ShieldCheck />, label: 'Secure Access', value: '100%' },
+    { icon: <Users />, label: 'Happy Readers', value: '15k+' },
+    { icon: <ShieldCheck />, label: 'Safe Delivery', value: '100%' },
   ];
 
   return (
@@ -42,10 +42,10 @@ const About = () => {
                 <div className="bg-primary-600 p-3 rounded-2xl text-white shadow-lg">
                   <Sparkles size={24} />
                 </div>
-                <p className="font-black text-slate-900 leading-tight">Elite <br /> Curation</p>
+                <p className="font-black text-slate-900 leading-tight">Handpicked <br /> Books</p>
               </div>
               <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                Every title in our collection undergoes a rigorous selection process to ensure literary excellence.
+                We carefully choose every book in our store to make sure you get the best reading experience.
               </p>
             </motion.div>
           </motion.div>
@@ -57,13 +57,13 @@ const About = () => {
           >
             <div className="flex items-center gap-2 mb-4">
               <div className="h-px w-8 bg-primary-600" />
-              <span className="text-primary-600 font-black text-xs uppercase tracking-[0.2em]">Our Heritage</span>
+              <span className="text-primary-600 font-black text-xs uppercase tracking-[0.2em]">Our Story</span>
             </div>
             <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-8 leading-tight">
-              Crafting a <span className="text-gradient">Literary Haven</span> for the Modern Mind.
+              A Peaceful Place for <span className="text-gradient">Book Lovers.</span>
             </h2>
             <p className="text-lg text-slate-500 mb-10 leading-relaxed font-medium">
-              At SapienBooks, we believe that literature is the ultimate form of human expression. Our mission is to bridge the gap between timeless wisdom and modern convenience, providing a curated experience for those who value depth, quality, and intellectual growth.
+              At SapienBooks, we think every book is a path to a new story. We want to help you find books that make you happy and help you learn. We started as a small shop and now we help readers everywhere find their next favorite book.
             </p>
             
             <div className="grid grid-cols-2 gap-10">

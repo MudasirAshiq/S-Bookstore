@@ -41,7 +41,7 @@ const AdminLogin = ({ onLogin, onBack }) => {
           className="flex items-center gap-2 text-slate-400 hover:text-primary-600 mb-10 transition-all font-black text-xs uppercase tracking-widest group"
         >
           <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-          Exit Portal
+          Go Back
         </button>
         
         <div className="bg-white p-12 rounded-[3rem] shadow-2xl shadow-primary-500/5 border border-slate-100">
@@ -52,13 +52,13 @@ const AdminLogin = ({ onLogin, onBack }) => {
                 <ShieldCheck size={40} />
               </div>
             </div>
-            <h2 className="text-4xl font-black text-slate-900 tracking-tight">Admin <span className="text-primary-600">Portal</span></h2>
-            <p className="text-slate-400 font-medium mt-3">Identity verification required</p>
+            <h2 className="text-4xl font-black text-slate-900 tracking-tight">Admin <span className="text-primary-600">Login</span></h2>
+            <p className="text-slate-400 font-medium mt-3">Please sign in to continue</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
             <div>
-              <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Email Terminal</label>
+              <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Admin Email</label>
               <div className="relative group">
                 <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5 group-focus-within:text-primary-600 transition-colors" />
                 <input 
@@ -70,7 +70,7 @@ const AdminLogin = ({ onLogin, onBack }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Passkey</label>
+              <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Password</label>
               <div className="relative group">
                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5 group-focus-within:text-primary-600 transition-colors" />
                 <input 
@@ -93,7 +93,7 @@ const AdminLogin = ({ onLogin, onBack }) => {
             >
               {loading ? <Loader2 className="animate-spin" /> : (
                 <>
-                  <span>Verify Credentials</span>
+                  <span>Sign In</span>
                   <Sparkles size={20} className="opacity-50 group-hover:opacity-100 transition-opacity" />
                 </>
               )}
