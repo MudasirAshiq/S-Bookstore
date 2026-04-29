@@ -17,7 +17,6 @@ const AdminDashboard = ({ onLogout }) => {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [currentBook, setCurrentBook] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [passwordData, setPasswordData] = useState({ newPassword: '', confirmPassword: '' });
@@ -104,11 +103,10 @@ const AdminDashboard = ({ onLogout }) => {
     }
     try {
       await sql`UPDATE users SET password = ${passwordData.newPassword} WHERE email = 'admin@sapien.com'`;
-      toast.success('Password updated');
-      setIsPasswordModalOpen(false);
+      toast.success('Password updated successfully');
       setPasswordData({ newPassword: '', confirmPassword: '' });
     } catch (error) {
-      toast.error('Failed: ' + error.message);
+      toast.error('Failed to update password: ' + error.message);
     }
   };
 
