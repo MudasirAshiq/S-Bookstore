@@ -38,8 +38,8 @@ const Contact = () => {
               {[
                 { icon: <Mail />, label: 'Email Us', value: 'info@sapienbooks.com' },
                 { icon: <Phone />, label: 'Call Us', value: '+91-98100-93952' },
-                { icon: <Clock />, label: 'Opening Hours', value: 'Mon - Sat: 10:00 - 19:00' },
-                { icon: <MapPin />, label: 'Visit Us', value: '166, Asif Ali Road, New Delhi' },
+                { icon: <Phone />, label: 'Landline', value: '011-2327-0391' },
+                { icon: <MapPin />, label: 'Visit Us', value: '166, Asif Ali Road, New Delhi - 110002' },
               ].map((item, i) => (
                 <motion.div 
                   key={i}
