@@ -1,144 +1,124 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Mail, Phone, MapPin, Send, MessageSquare, Clock } from 'lucide-react';
 
 const Contact = () => {
-  const [activeSide, setActiveSide] = useState('info'); // 'info' or 'form'
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
-
-  React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 1024);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   return (
-    <section id="contact" className="py-24 bg-gray-50">
-      <div className="container mx-auto px-6">
-        <div className="relative bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-gray-100 min-h-[600px]">
+    <section id="contact" className="section-padding bg-slate-50 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.02] pointer-events-none" />
+      
+      <div className="container mx-auto max-w-7xl px-6 relative z-10">
+        <div className="grid lg:grid-cols-5 gap-16 items-start">
           
-          {/* Sliding Background (Responsive) */}
-          <motion.div 
-            initial={false}
-            animate={{ 
-              x: !isMobile ? (activeSide === 'info' ? '0%' : '100%') : 0,
-              y: isMobile ? (activeSide === 'info' ? '0%' : '100%') : 0,
-              borderRadius: activeSide === 'info' 
-                ? (!isMobile ? '0 2.5rem 2.5rem 0' : '0 0 2.5rem 2.5rem') 
-                : (!isMobile ? '2.5rem 0 0 2.5rem' : '2.5rem 2.5rem 0 0')
-            }}
-            transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="absolute top-0 left-0 w-full lg:w-1/2 h-1/2 lg:h-full bg-primary-600 z-0"
-          />
-
-          <div className="relative grid grid-cols-1 lg:grid-cols-2 z-10 h-full min-h-[600px]">
-            
-            {/* Left Side: Info */}
-            <div 
-              onClick={() => setActiveSide('info')}
-              className={`p-12 lg:p-16 transition-colors duration-500 cursor-pointer flex flex-col justify-center ${activeSide === 'info' ? 'text-white' : 'text-gray-900'}`}
+          {/* Left: Contact Info */}
+          <div className="lg:col-span-2">
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex items-center gap-2 mb-4"
             >
-              <h2 className="text-4xl font-black mb-6">Get in Touch</h2>
-              <p className={`mb-12 text-lg font-medium ${activeSide === 'info' ? 'text-primary-100' : 'text-gray-500'}`}>
-                Have questions about a book or your order? Our team is here to help you find your next great read.
-              </p>
-              
-              <div className="space-y-6">
-                <div className="flex items-center gap-6 group">
-                  <div className={`p-4 rounded-2xl transition-colors duration-500 ${activeSide === 'info' ? 'bg-white/10 group-hover:bg-white/20' : 'bg-primary-50 text-primary-600'}`}>
-                    <Mail className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className={`text-sm uppercase tracking-widest font-black mb-1 ${activeSide === 'info' ? 'text-primary-200' : 'text-primary-600'}`}>Email Us</p>
-                    <p className="text-xl font-bold">info@sapienbooks.com</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-6 group">
-                  <div className={`p-4 rounded-2xl transition-colors duration-500 ${activeSide === 'info' ? 'bg-white/10 group-hover:bg-white/20' : 'bg-primary-50 text-primary-600'}`}>
-                    <Phone className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className={`text-sm uppercase tracking-widest font-black mb-1 ${activeSide === 'info' ? 'text-primary-200' : 'text-primary-600'}`}>Phone</p>
-                    <p className="text-xl font-bold">+91-98100-93952</p>
-                  </div>
-                </div>
+              <div className="h-px w-8 bg-primary-600" />
+              <span className="text-primary-600 font-black text-xs uppercase tracking-[0.2em]">Contact Us</span>
+            </motion.div>
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-4xl md:text-6xl font-black text-slate-900 mb-8 leading-tight"
+            >
+              Let's Start a <span className="text-gradient">Conversation.</span>
+            </h2>
+            <p className="text-lg text-slate-500 mb-12 font-medium leading-relaxed">
+              Have a specific request or looking for a rare title? Our literary consultants are here to assist you with personalized recommendations.
+            </p>
 
-                <div className="flex items-center gap-6 group">
-                  <div className={`p-4 rounded-2xl transition-colors duration-500 ${activeSide === 'info' ? 'bg-white/10 group-hover:bg-white/20' : 'bg-primary-50 text-primary-600'}`}>
-                    <Phone className="w-6 h-6" />
+            <div className="space-y-8">
+              {[
+                { icon: <Mail />, label: 'Inquiries', value: 'curation@sapienbooks.com' },
+                { icon: <Phone />, label: 'Concierge', value: '+91-98100-93952' },
+                { icon: <Clock />, label: 'Consultation Hours', value: 'Mon - Sat: 10:00 - 19:00' },
+                { icon: <MapPin />, label: 'Private Library', value: '166, Asif Ali Road, New Delhi' },
+              ].map((item, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="flex gap-6 group"
+                >
+                  <div className="bg-white p-4 rounded-2xl shadow-sm group-hover:shadow-md group-hover:bg-primary-600 group-hover:text-white transition-all duration-300 text-primary-600 border border-slate-100">
+                    {React.cloneElement(item.icon, { size: 24 })}
                   </div>
                   <div>
-                    <p className={`text-sm uppercase tracking-widest font-black mb-1 ${activeSide === 'info' ? 'text-primary-200' : 'text-primary-600'}`}>Landline</p>
-                    <p className="text-xl font-bold">011-23271100</p>
+                    <p className="text-xs text-slate-400 font-black uppercase tracking-widest mb-1">{item.label}</p>
+                    <p className="text-lg font-black text-slate-900">{item.value}</p>
                   </div>
-                </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
 
-                <div className="flex items-center gap-6 group">
-                  <div className={`p-4 rounded-2xl transition-colors duration-500 ${activeSide === 'info' ? 'bg-white/10 group-hover:bg-white/20' : 'bg-primary-50 text-primary-600'}`}>
-                    <MapPin className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <p className={`text-sm uppercase tracking-widest font-black mb-1 ${activeSide === 'info' ? 'text-primary-200' : 'text-primary-600'}`}>Visit Us</p>
-                    <p className="text-xl font-bold leading-tight">166, Service Lane, Asif Ali Road,<br/>New Delhi - 110002</p>
-                  </div>
-                </div>
+          {/* Right: Contact Form */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="lg:col-span-3 bg-white p-10 md:p-16 rounded-[3.5rem] shadow-2xl shadow-slate-200/50 border border-slate-100"
+          >
+            <div className="flex items-center gap-4 mb-10">
+              <div className="bg-primary-50 p-3 rounded-2xl text-primary-600">
+                <MessageSquare size={24} />
               </div>
+              <h3 className="text-2xl font-black text-slate-900">Send a Secure Message</h3>
             </div>
 
-            {/* Right Side: Form */}
-            <div 
-              onClick={() => setActiveSide('form')}
-              className={`p-12 lg:p-16 transition-colors duration-500 cursor-pointer flex flex-col justify-center ${activeSide === 'form' ? 'text-white' : 'text-gray-900'}`}
-            >
-              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className={`block text-sm font-bold mb-2 transition-colors duration-500 ${activeSide === 'form' ? 'text-white' : 'text-gray-700'}`}>Full Name</label>
-                    <input 
-                      type="text" 
-                      onFocus={() => setActiveSide('form')}
-                      className={`w-full px-5 py-4 rounded-2xl border transition-all duration-300 outline-none ${activeSide === 'form' ? 'bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:bg-white/20' : 'bg-gray-50 border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 text-gray-900'}`}
-                      placeholder="John Doe"
-                    />
-                  </div>
-                  <div>
-                    <label className={`block text-sm font-bold mb-2 transition-colors duration-500 ${activeSide === 'form' ? 'text-white' : 'text-gray-700'}`}>Email Address</label>
-                    <input 
-                      type="email" 
-                      onFocus={() => setActiveSide('form')}
-                      className={`w-full px-5 py-4 rounded-2xl border transition-all duration-300 outline-none ${activeSide === 'form' ? 'bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:bg-white/20' : 'bg-gray-50 border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 text-gray-900'}`}
-                      placeholder="john@example.com"
-                    />
-                  </div>
-                </div>
+            <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+              <div className="grid md:grid-cols-2 gap-8">
                 <div>
-                  <label className={`block text-sm font-bold mb-2 transition-colors duration-500 ${activeSide === 'form' ? 'text-white' : 'text-gray-700'}`}>Subject</label>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Identity</label>
                   <input 
                     type="text" 
-                    onFocus={() => setActiveSide('form')}
-                    className={`w-full px-5 py-4 rounded-2xl border transition-all duration-300 outline-none ${activeSide === 'form' ? 'bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:bg-white/20' : 'bg-gray-50 border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 text-gray-900'}`}
-                    placeholder="How can we help?"
+                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all font-bold"
+                    placeholder="Your Full Name"
                   />
                 </div>
                 <div>
-                  <label className={`block text-sm font-bold mb-2 transition-colors duration-500 ${activeSide === 'form' ? 'text-white' : 'text-gray-700'}`}>Message</label>
-                  <textarea 
-                    rows="4"
-                    onFocus={() => setActiveSide('form')}
-                    className={`w-full px-5 py-4 rounded-2xl border transition-all duration-300 outline-none resize-none ${activeSide === 'form' ? 'bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:bg-white/20' : 'bg-gray-50 border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 text-gray-900'}`}
-                    placeholder="Your message here..."
-                  ></textarea>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Email Channel</label>
+                  <input 
+                    type="email" 
+                    className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all font-bold"
+                    placeholder="name@company.com"
+                  />
                 </div>
-                <button 
-                  className={`w-full py-4 rounded-2xl text-lg font-bold flex justify-center items-center gap-2 shadow-xl transition-all duration-500 active:scale-95 ${activeSide === 'form' ? 'bg-white text-primary-600 hover:bg-gray-100 shadow-white/10' : 'bg-primary-600 text-white hover:bg-primary-700 shadow-primary-200'}`}
-                >
-                  Send Message
-                  <Send className="w-5 h-5" />
-                </button>
-              </form>
-            </div>
-          </div>
+              </div>
+              <div>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Inquiry Subject</label>
+                <input 
+                  type="text" 
+                  className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all font-bold"
+                  placeholder="Order Status, Book Request, etc."
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Detailed Message</label>
+                <textarea 
+                  rows="4"
+                  className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all font-medium resize-none"
+                  placeholder="Tell us how we can assist you..."
+                ></textarea>
+              </div>
+              <button 
+                className="btn-primary w-full py-5 rounded-2xl text-lg group"
+              >
+                <span>Dispatch Message</span>
+                <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              </button>
+            </form>
+          </motion.div>
+
         </div>
       </div>
     </section>

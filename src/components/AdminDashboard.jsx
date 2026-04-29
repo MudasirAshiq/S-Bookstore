@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Plus, Edit2, Trash2, LogOut, LayoutGrid, X, Loader2, Image as ImageIcon, BookOpen, Key, Book as BookIcon, Eye, EyeOff, Upload } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Plus, Edit2, Trash2, LogOut, LayoutGrid, X, Loader2, 
+  Image as ImageIcon, BookOpen, Key, Book as BookIcon, 
+  Eye, EyeOff, Search, Settings, PieChart, Layers
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 import { sql } from '../lib/db';
 
@@ -14,26 +18,17 @@ const AdminDashboard = ({ onLogout }) => {
   const [passwordData, setPasswordData] = useState({ newPassword: '', confirmPassword: '' });
   const [showPasswords, setShowPasswords] = useState({ new: false, confirm: false });
   const [imageFile, setImageFile] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
-    title: '',
-    author: '',
-    price: '',
-    discount_percent: '',
-    image_url: '',
-    description: ''
+    title: '', author: '', price: '', discount_percent: '', image_url: '', description: ''
   });
 
-  useEffect(() => {
-    loadBooks();
-  }, []);
+  useEffect(() => { loadBooks(); }, []);
 
   const loadBooks = async () => {
     try {
       setLoading(true);
-      const data = await sql`
-        SELECT * FROM books 
-        ORDER BY created_at DESC
-      `;
+      const data = await sql`SELECT * FROM books ORDER BY created_at DESC`;
       setBooks(data || []);
     } catch (err) {
       toast.error('Failed to load books: ' + err.message);
@@ -45,11 +40,8 @@ const AdminDashboard = ({ onLogout }) => {
   const handleEdit = (book) => {
     setCurrentBook(book);
     setFormData({
-      title: book.title,
-      author: book.author,
-      price: book.price,
-      discount_percent: book.discount_percent || '',
-      image_url: book.image_url,
+      title: book.title, author: book.author, price: book.price,
+      discount_percent: book.discount_percent || '', image_url: book.image_url,
       description: book.description || ''
     });
     setIsFormOpen(true);
@@ -67,45 +59,32 @@ const AdminDashboard = ({ onLogout }) => {
     }
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      let finalImageUrl = formData.image_url;
-
-      // Note: File upload is currently disabled as Neon doesn't have built-in storage.
       if (imageFile) {
-        toast.error('Local file upload is currently disabled. Please use an image URL.');
-        setSubmitting(false);
-        return;
+        toast.error('Please use an image URL. Local upload is currently disabled.');
+        setSubmitting(false); return;
       }
-
       const price = parseFloat(formData.price);
       const discount = parseInt(formData.discount_percent) || 0;
 
       if (currentBook) {
         await sql`
-          UPDATE books 
-          SET title = ${formData.title}, 
-              author = ${formData.author}, 
-              price = ${price}, 
-              discount_percent = ${discount}, 
-              image_url = ${finalImageUrl}, 
-              description = ${formData.description}
-          WHERE id = ${currentBook.id}
+          UPDATE books SET title = ${formData.title}, author = ${formData.author}, 
+          price = ${price}, discount_percent = ${discount}, image_url = ${formData.image_url}, 
+          description = ${formData.description} WHERE id = ${currentBook.id}
         `;
         toast.success('Book updated successfully');
       } else {
         await sql`
           INSERT INTO books (title, author, price, discount_percent, image_url, description)
-          VALUES (${formData.title}, ${formData.author}, ${price}, ${discount}, ${finalImageUrl}, ${formData.description})
+          VALUES (${formData.title}, ${formData.author}, ${price}, ${discount}, ${formData.image_url}, ${formData.description})
         `;
         toast.success('Book added successfully');
       }
-      setIsFormOpen(false);
-      resetForm();
-      loadBooks();
+      setIsFormOpen(false); resetForm(); loadBooks();
     } catch (err) {
       toast.error('Operation failed: ' + err.message);
     } finally {
@@ -114,409 +93,257 @@ const AdminDashboard = ({ onLogout }) => {
   };
 
   const resetForm = () => {
-    setCurrentBook(null);
-    setImageFile(null);
-    setFormData({
-      title: '',
-      author: '',
-      price: '',
-      discount_percent: '',
-      image_url: '',
-      description: ''
-    });
+    setCurrentBook(null); setImageFile(null);
+    setFormData({ title: '', author: '', price: '', discount_percent: '', image_url: '', description: '' });
   };
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error("New passwords don't match");
-      return;
-    }
-    
-    try {
-      // In this simple setup, we're updating all users (which is just one admin)
-      // or we could target by email if we had the current user's email.
-      await sql`
-        UPDATE users 
-        SET password = ${passwordData.newPassword}
-        WHERE email = 'admin@sapien.com'
-      `;
-      
-      toast.success('Password updated successfully!');
-      setIsPasswordModalOpen(false);
-      setPasswordData({ newPassword: '', confirmPassword: '' });
-    } catch (error) {
-      toast.error('Failed to update password: ' + error.message);
-    }
-  };
+  const filteredBooks = books.filter(b => 
+    b.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    b.author.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-        <div className="container mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-primary-500 rounded-lg blur-sm group-hover:blur-md transition-all opacity-50"></div>
-              <div className="relative bg-gradient-to-br from-primary-600 to-primary-700 p-2.5 rounded-lg shadow-xl transform group-hover:rotate-6 transition-transform">
-                <BookIcon className="text-white w-6 h-6" />
-              </div>
-            </div>
-            <div>
-              <h1 className="text-xl font-black text-gray-900 tracking-tight leading-none">Sapien<span className="text-primary-600">Dashboard</span></h1>
-              <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Control Center</p>
-            </div>
+    <div className="min-h-screen bg-[#f8fafc] flex">
+      {/* Sidebar - Desktop */}
+      <aside className="hidden lg:flex flex-col w-72 bg-slate-900 text-white p-6 sticky top-0 h-screen">
+        <div className="flex items-center gap-3 mb-12 px-2">
+          <div className="bg-primary-600 p-2 rounded-xl">
+            <BookIcon size={24} />
           </div>
-          <div className="flex items-center gap-2 sm:gap-6">
-            <button 
-              onClick={() => setIsPasswordModalOpen(true)}
-              className="p-2 text-gray-500 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all"
-              title="Change Password"
-            >
-              <Key size={20} />
-            </button>
-            <button 
-              onClick={onLogout}
-              className="flex items-center gap-2 bg-gray-50 text-gray-600 hover:text-red-600 hover:bg-red-50 px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl font-bold text-sm transition-all border border-gray-100"
-            >
-              <LogOut size={18} />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
-          </div>
+          <span className="text-xl font-black tracking-tight">Sapien<span className="text-primary-400">Admin</span></span>
         </div>
-      </header>
 
-      <main className="flex-grow container mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        <div className="flex flex-col sm:row sm:justify-between sm:items-center gap-6 mb-10">
-          <div>
-            <h2 className="text-3xl font-black text-gray-900">Manage Collection</h2>
-            <p className="text-gray-500 mt-1 font-medium">Total Books: <span className="text-primary-600 font-bold">{books.length}</span></p>
-          </div>
+        <nav className="flex-grow space-y-2">
+          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-primary-600 font-bold text-sm">
+            <LayoutGrid size={20} />
+            Inventory
+          </button>
+          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white font-bold text-sm transition-all">
+            <PieChart size={20} />
+            Analytics
+          </button>
+          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white font-bold text-sm transition-all">
+            <Layers size={20} />
+            Categories
+          </button>
           <button 
-            onClick={() => { resetForm(); setIsFormOpen(true); }}
-            className="btn-primary w-full sm:w-auto flex items-center justify-center gap-2 shadow-lg shadow-primary-200"
+            onClick={() => setIsPasswordModalOpen(true)}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white font-bold text-sm transition-all"
           >
-            <Plus size={20} />
-            Add New Book
+            <Settings size={20} />
+            Settings
+          </button>
+        </nav>
+
+        <div className="mt-auto pt-6 border-t border-slate-800">
+          <button 
+            onClick={onLogout}
+            className="w-full flex items-center gap-3 px-4 py-4 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white font-bold text-sm transition-all"
+          >
+            <LogOut size={20} />
+            Sign Out
           </button>
         </div>
+      </aside>
 
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-12 h-12 text-primary-600 animate-spin" />
+      {/* Main Content */}
+      <main className="flex-grow flex flex-col min-w-0">
+        {/* Top Header */}
+        <header className="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-20">
+          <div className="flex items-center gap-4 flex-grow max-w-xl">
+            <div className="relative w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <input 
+                type="text" 
+                placeholder="Search inventory..."
+                className="w-full pl-12 pr-4 py-2.5 bg-slate-50 rounded-xl border border-transparent focus:bg-white focus:border-primary-500 outline-none transition-all"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
           </div>
-        ) : (
-          <>
-            {/* Desktop Table View */}
-            <div className="hidden lg:block bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-              <table className="w-full text-left">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-4 text-sm font-bold text-gray-600">Book</th>
-                    <th className="px-6 py-4 text-sm font-bold text-gray-600">Author</th>
-                    <th className="px-6 py-4 text-sm font-bold text-gray-600">Price</th>
-                    <th className="px-6 py-4 text-sm font-bold text-gray-600 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {books.map((book) => (
-                    <tr key={book.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          <img 
-                            src={book.image_url} 
-                            alt={book.title} 
-                            className="w-12 h-16 object-cover rounded shadow-sm"
-                          />
-                          <span className="font-bold text-gray-900">{book.title}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-gray-600">{book.author}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col">
-                          {book.discount_percent > 0 ? (
-                            <>
-                              <span className="font-bold text-primary-600">
-                                ₹{(book.price - (book.price * book.discount_percent / 100)).toLocaleString('en-IN')}
-                              </span>
-                              <span className="text-xs text-gray-400 line-through">
-                                ₹{parseFloat(book.price).toLocaleString('en-IN')}
-                              </span>
-                              <span className="text-[10px] text-green-600 font-bold">({book.discount_percent}% OFF)</span>
-                            </>
-                          ) : (
-                            <span className="font-bold text-gray-900">₹{parseFloat(book.price).toLocaleString('en-IN')}</span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button 
-                            onClick={() => handleEdit(book)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          >
-                            <Edit2 size={18} />
-                          </button>
-                          <button 
-                            onClick={() => handleDelete(book)}
-                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          
+          <div className="flex items-center gap-4">
+             <div className="text-right hidden sm:block">
+               <p className="text-sm font-black text-slate-900">Administrator</p>
+               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Master Control</p>
+             </div>
+             <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-black">
+               AD
+             </div>
+          </div>
+        </header>
 
-            {/* Mobile Card View */}
-            <div className="lg:hidden grid gap-4">
-              {books.map((book) => (
-                <div key={book.id} className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm flex gap-4">
-                  <img 
-                    src={book.image_url} 
-                    alt={book.title} 
-                    className="w-20 h-28 object-cover rounded-xl shadow-sm"
-                  />
-                  <div className="flex-grow flex flex-col justify-between">
-                    <div>
-                      <h4 className="font-black text-gray-900 line-clamp-1">{book.title}</h4>
-                      <p className="text-xs text-gray-500 font-medium">{book.author}</p>
-                      <div className="mt-2">
-                        {book.discount_percent > 0 ? (
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-primary-600">
-                              ₹{(book.price - (book.price * book.discount_percent / 100)).toLocaleString('en-IN')}
-                            </span>
-                            <span className="text-[10px] text-gray-400 line-through">
-                              ₹{parseFloat(book.price).toLocaleString('en-IN')}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="font-bold text-gray-900">₹{parseFloat(book.price).toLocaleString('en-IN')}</span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-2 mt-2">
-                      <button 
-                        onClick={() => handleEdit(book)}
-                        className="flex-1 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold transition-all active:scale-95"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(book)}
-                        className="flex-1 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold transition-all active:scale-95"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+        <div className="p-8 max-w-7xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
+            <div>
+              <h2 className="text-3xl font-black text-slate-900">Collection Overview</h2>
+              <p className="text-slate-500 font-medium mt-1">Manage and monitor your digital library</p>
             </div>
-          </>
-        )}
+            <button 
+              onClick={() => { resetForm(); setIsFormOpen(true); }}
+              className="btn-primary"
+            >
+              <Plus size={20} />
+              Add New Asset
+            </button>
+          </div>
+
+          {/* Stats Bar */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+              <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Total Assets</p>
+              <p className="text-3xl font-black text-slate-900">{books.length}</p>
+            </div>
+            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+              <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Discounted</p>
+              <p className="text-3xl font-black text-slate-900">{books.filter(b => b.discount_percent > 0).length}</p>
+            </div>
+            <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+              <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Avg. Price</p>
+              <p className="text-3xl font-black text-slate-900">
+                ₹{books.length ? Math.round(books.reduce((acc, b) => acc + parseFloat(b.price), 0) / books.length) : 0}
+              </p>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-32">
+              <Loader2 className="w-12 h-12 text-primary-600 animate-spin" />
+              <p className="text-slate-400 font-bold mt-4">Syncing Database...</p>
+            </div>
+          ) : (
+            <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50/50 border-b border-slate-100">
+                      <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Asset Details</th>
+                      <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Classification</th>
+                      <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest">Pricing</th>
+                      <th className="px-8 py-5 text-xs font-black text-slate-400 uppercase tracking-widest text-right">Operations</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {filteredBooks.map((book) => (
+                      <tr key={book.id} className="hover:bg-slate-50/50 transition-colors group">
+                        <td className="px-8 py-6">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-16 rounded-xl overflow-hidden shadow-sm flex-shrink-0">
+                              <img src={book.image_url} alt={book.title} className="w-full h-full object-cover" />
+                            </div>
+                            <div>
+                              <p className="font-black text-slate-900">{book.title}</p>
+                              <p className="text-xs text-slate-400 font-bold tracking-tight">{book.author}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-8 py-6">
+                          <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-[10px] font-black uppercase tracking-widest">
+                            Literature
+                          </span>
+                        </td>
+                        <td className="px-8 py-6">
+                          <div className="flex flex-col">
+                            <span className="font-black text-slate-900">₹{parseFloat(book.price).toLocaleString('en-IN')}</span>
+                            {book.discount_percent > 0 && (
+                              <span className="text-[10px] text-green-600 font-bold">-{book.discount_percent}% Applied</span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-8 py-6 text-right">
+                          <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button 
+                              onClick={() => handleEdit(book)}
+                              className="p-2 text-primary-600 hover:bg-primary-50 rounded-xl transition-colors"
+                            >
+                              <Edit2 size={18} />
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(book)}
+                              className="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
       </main>
 
-      {/* Change Password Modal */}
-      {isPasswordModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden"
-          >
-            <div className="px-10 py-8 text-center border-b border-gray-100">
-              <div className="bg-primary-50 w-16 h-16 rounded-3xl flex items-center justify-center mx-auto mb-4 text-primary-600">
-                <Key size={32} />
-              </div>
-              <h3 className="text-2xl font-black text-gray-900">Change Password</h3>
-              <p className="text-gray-500 text-sm mt-1">Update your Supabase account security</p>
-            </div>
-
-            <form onSubmit={handlePasswordChange} className="p-10 space-y-6">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">New Password</label>
-                <div className="relative">
-                  <input 
-                    type={showPasswords.new ? "text" : "password"} 
-                    required
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all pr-14"
-                    value={passwordData.newPassword}
-                    onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
-                  />
-                  <button 
-                    type="button"
-                    onClick={() => setShowPasswords({...showPasswords, new: !showPasswords.new})}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary-600 transition-colors p-1"
-                  >
-                    {showPasswords.new ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
+      {/* Modals & Overlays (Password & Form) */}
+      <AnimatePresence>
+        {isPasswordModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="bg-white rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden p-10">
+                <div className="text-center mb-8">
+                  <div className="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-primary-600"><Key size={32} /></div>
+                  <h3 className="text-2xl font-black text-slate-900">Security Access</h3>
+                  <p className="text-slate-400 font-medium">Rotate your administrative password</p>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">Confirm New Password</label>
-                <div className="relative">
-                  <input 
-                    type={showPasswords.confirm ? "text" : "password"} 
-                    required
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all pr-14"
-                    value={passwordData.confirmPassword}
-                    onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
-                  />
-                  <button 
-                    type="button"
-                    onClick={() => setShowPasswords({...showPasswords, confirm: !showPasswords.confirm})}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary-600 transition-colors p-1"
-                  >
-                    {showPasswords.confirm ? <EyeOff size={20} /> : <Eye size={20} />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3 pt-4">
-                <button type="submit" className="btn-primary py-4 rounded-2xl text-lg shadow-xl shadow-primary-200">
-                  Update Password
-                </button>
-                <button 
-                  type="button"
-                  onClick={() => setIsPasswordModalOpen(false)}
-                  className="py-3 text-gray-400 font-bold hover:text-gray-600 transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      )}
-
-      {/* Form Modal */}
-      {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-md">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="bg-white rounded-[2.5rem] w-full max-w-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
-          >
-            <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-              <h3 className="text-2xl font-black text-gray-900">{currentBook ? 'Edit Book' : 'Add New Book'}</h3>
-              <button onClick={() => setIsFormOpen(false)} className="bg-white p-2 rounded-full text-gray-400 hover:text-gray-600 shadow-sm transition-all border border-gray-100">
-                <X size={20} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-8 overflow-y-auto custom-scrollbar">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Book Title</label>
-                  <input 
-                    type="text" 
-                    required
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all"
-                    value={formData.title}
-                    onChange={(e) => setFormData({...formData, title: e.target.value})}
-                  />
-                </div>
-
-                <div className="sm:col-span-1">
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Author</label>
-                  <input 
-                    type="text" 
-                    required
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all"
-                    value={formData.author}
-                    onChange={(e) => setFormData({...formData, author: e.target.value})}
-                  />
-                </div>
-
-                <div className="sm:col-span-1">
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Price (₹)</label>
-                  <input 
-                    type="number" 
-                    step="0.01"
-                    required
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all"
-                    value={formData.price}
-                    onChange={(e) => setFormData({...formData, price: e.target.value})}
-                  />
-                </div>
-
-                <div className="sm:col-span-1">
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Discount (%)</label>
-                  <input 
-                    type="number" 
-                    min="0"
-                    max="100"
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all"
-                    value={formData.discount_percent}
-                    onChange={(e) => setFormData({...formData, discount_percent: e.target.value})}
-                  />
-                </div>
-
-                <div className="sm:col-span-1">
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Book Image</label>
-                  <div className="flex flex-col gap-3">
-                    <div className="relative">
-                      <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <form onSubmit={handlePasswordChange} className="space-y-6">
+                  {['newPassword', 'confirmPassword'].map((field) => (
+                    <div key={field}>
+                      <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">{field.replace('P', ' P')}</label>
                       <input 
-                        type="url" 
-                        placeholder="Image URL"
-                        className="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all"
-                        value={formData.image_url}
-                        onChange={(e) => setFormData({...formData, image_url: e.target.value})}
+                        type="password" required className="w-full px-5 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all"
+                        value={passwordData[field]} onChange={(e) => setPasswordData({...passwordData, [field]: e.target.value})}
                       />
                     </div>
-                    <div className="relative">
-                      <input 
-                        type="file" 
-                        accept="image/*"
-                        className="hidden"
-                        id="local-upload"
-                        onChange={(e) => setImageFile(e.target.files[0])}
-                      />
-                      <label 
-                        htmlFor="local-upload"
-                        className={`w-full flex items-center justify-center gap-2 py-4 rounded-2xl border-2 border-dashed font-bold cursor-pointer transition-all ${imageFile ? 'border-primary-500 bg-primary-50 text-primary-600' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-                      >
-                        <Plus size={18} />
-                        {imageFile ? imageFile.name : 'Choose File to Upload'}
-                      </label>
+                  ))}
+                  <div className="flex flex-col gap-3 pt-4">
+                    <button type="submit" className="btn-primary w-full py-4 rounded-2xl">Execute Update</button>
+                    <button type="button" onClick={() => setIsPasswordModalOpen(false)} className="py-3 text-slate-400 font-bold text-sm">Discard</button>
+                  </div>
+                </form>
+            </motion.div>
+          </div>
+        )}
+
+        {isFormOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md">
+            <motion.div initial={{ opacity: 0, y: 100 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 100 }} className="bg-white rounded-[3rem] w-full max-w-4xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+              <div className="px-10 py-8 border-b border-slate-50 flex justify-between items-center">
+                <div>
+                  <h3 className="text-2xl font-black text-slate-900">{currentBook ? 'Edit Manifest' : 'Register New Asset'}</h3>
+                  <p className="text-slate-400 font-medium text-sm mt-1">Fill in the required telemetry data</p>
+                </div>
+                <button onClick={() => setIsFormOpen(false)} className="bg-slate-50 p-3 rounded-2xl text-slate-400 hover:text-slate-900 transition-all">
+                  <X size={20} />
+                </button>
+              </div>
+              <form onSubmit={handleSubmit} className="p-10 overflow-y-auto custom-scrollbar">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Title</label>
+                    <input type="text" required className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 outline-none transition-all font-bold" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
+                  </div>
+                  {['author', 'price', 'discount_percent', 'image_url'].map((field) => (
+                    <div key={field}>
+                      <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">{field.replace('_', ' ')}</label>
+                      <input type={field.includes('price') || field.includes('percent') ? 'number' : 'text'} required={field !== 'discount_percent'} className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 outline-none transition-all font-bold" value={formData[field]} onChange={(e) => setFormData({...formData, [field]: e.target.value})} />
                     </div>
+                  ))}
+                  <div className="md:col-span-2">
+                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2">Description</label>
+                    <textarea rows="3" className="w-full px-6 py-4 rounded-2xl bg-slate-50 border-transparent focus:bg-white focus:ring-4 focus:ring-primary-100 outline-none transition-all font-medium resize-none" value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})}></textarea>
                   </div>
                 </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
-                  <textarea 
-                    rows="3"
-                    className="w-full px-5 py-4 rounded-2xl border border-gray-200 focus:ring-4 focus:ring-primary-100 focus:border-primary-500 outline-none transition-all resize-none"
-                    value={formData.description}
-                    onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    placeholder="Short summary of the book..."
-                  ></textarea>
+                <div className="flex gap-4 mt-10">
+                  <button type="button" onClick={() => setIsFormOpen(false)} className="flex-1 py-4 bg-slate-50 text-slate-400 font-black rounded-2xl hover:bg-slate-100 transition-all">Abort Changes</button>
+                  <button type="submit" disabled={submitting} className="flex-[2] btn-primary py-4 rounded-2xl text-lg">{submitting ? <Loader2 className="animate-spin" /> : currentBook ? 'Save Deployment' : 'Launch Asset'}</button>
                 </div>
-              </div>
-
-              <div className="flex gap-4 mt-10">
-                <button 
-                  type="button"
-                  onClick={() => setIsFormOpen(false)}
-                  className="flex-1 py-4 bg-gray-50 text-gray-400 font-bold rounded-2xl hover:bg-gray-100 hover:text-gray-600 transition-all"
-                >
-                  Discard
-                </button>
-                <button type="submit" className="flex-[2] btn-primary py-4 rounded-2xl text-lg shadow-xl shadow-primary-200">
-                  {currentBook ? 'Apply Changes' : 'Publish Book'}
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      )}
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

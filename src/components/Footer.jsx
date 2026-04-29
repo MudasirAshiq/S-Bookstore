@@ -1,104 +1,93 @@
 import React from 'react';
-import { BookOpen, Send, Code2, Camera, User } from 'lucide-react';
+import { BookOpen, Send, Mail, Phone, MapPin, Sparkles } from 'lucide-react';
 
 const Footer = ({ onHomeClick, onCollectionClick }) => {
   return (
-    <footer className="bg-gray-900 text-white py-20">
-      <div className="container mx-auto px-6">
-        <div className="grid md:grid-cols-4 gap-12 mb-16">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="bg-primary-600 p-2 rounded-lg">
+    <footer className="bg-slate-900 text-white pt-24 pb-12 overflow-hidden relative">
+      {/* Decorative Blob */}
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary-600/10 rounded-full blur-[100px] translate-x-1/2 -translate-y-1/2" />
+      
+      <div className="container mx-auto max-w-7xl px-6 relative z-10">
+        <div className="grid lg:grid-cols-12 gap-16 mb-20">
+          <div className="lg:col-span-5">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="bg-primary-600 p-2.5 rounded-xl">
                 <BookOpen className="text-white w-6 h-6" />
               </div>
-              <span className="text-2xl font-bold tracking-tight">Sapien<span className="text-primary-600">Books</span></span>
+              <span className="text-2xl font-black tracking-tight">Sapien<span className="text-primary-400">Books</span></span>
             </div>
-            <p className="text-gray-400 max-w-sm leading-relaxed mb-8">
-              Helping readers everywhere find the best books. Join us and discover your next favorite story today.
+            <p className="text-slate-400 max-w-md leading-relaxed mb-10 text-lg font-medium">
+              Curating the world's most profound literature for the modern intellectual. Join our global community of readers and discover your next transformation.
             </p>
             <div className="flex gap-4">
-              {/* Facebook */}
-              <a href="#" className="bg-gray-800 p-3 rounded-full hover:bg-[#1877F2] transition-colors" title="Facebook">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-              </a>
-              {/* Instagram */}
-              <a href="#" className="bg-gray-800 p-3 rounded-full hover:bg-[#E4405F] transition-colors" title="Instagram">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-              </a>
-              {/* X (Twitter) */}
-              <a href="#" className="bg-gray-800 p-3 rounded-full hover:bg-black transition-colors" title="X">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932 6.064-6.932zm-1.292 19.494h2.039L6.486 3.24H4.298l13.311 17.407z"/></svg>
-              </a>
-              {/* Telegram */}
-              <a href="#" className="bg-gray-800 p-3 rounded-full hover:bg-[#26A5E4] transition-colors" title="Telegram">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-              </a>
+              {[
+                { label: 'FB', color: 'hover:bg-blue-600' },
+                { label: 'IG', color: 'hover:bg-pink-600' },
+                { label: 'TW', color: 'hover:bg-slate-800' },
+                { label: 'LI', color: 'hover:bg-blue-700' },
+              ].map(social => (
+                <a 
+                  key={social.label} 
+                  href="#" 
+                  className={`w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center font-black text-xs transition-all duration-300 ${social.color} hover:-translate-y-1`}
+                >
+                  {social.label}
+                </a>
+              ))}
             </div>
           </div>
 
-          <div>
-            <h4 className="text-lg font-bold mb-6">Quick Links</h4>
-            <ul className="space-y-4 text-gray-400">
-              <li>
-                <button onClick={onHomeClick} className="hover:text-primary-400 transition-colors">Home</button>
-              </li>
-              <li>
-                <button onClick={onCollectionClick} className="hover:text-primary-400 transition-colors">All Books</button>
-              </li>
-              <li>
-                <button onClick={() => { onHomeClick(); setTimeout(() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="hover:text-primary-400 transition-colors">About Us</button>
-              </li>
-              <li>
-                <button onClick={() => { onHomeClick(); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="hover:text-primary-400 transition-colors">Contact</button>
-              </li>
+          <div className="lg:col-span-3">
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-8 text-primary-400">Navigation</h4>
+            <ul className="space-y-4 text-slate-400 font-bold">
+              <li><button onClick={onHomeClick} className="hover:text-white transition-colors">Digital Library</button></li>
+              <li><button onClick={onCollectionClick} className="hover:text-white transition-colors">All Collections</button></li>
+              <li><button onClick={() => { onHomeClick(); setTimeout(() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="hover:text-white transition-colors">Our Legacy</button></li>
+              <li><button onClick={() => { onHomeClick(); setTimeout(() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' }), 100); }} className="hover:text-white transition-colors">Concierge</button></li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="text-lg font-bold mb-6">Newsletter</h4>
-            <p className="text-gray-400 mb-6 text-sm">Subscribe to get updates on new arrivals and special offers.</p>
-            <div className="flex gap-2">
+          <div className="lg:col-span-4">
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] mb-8 text-primary-400">Newsletter</h4>
+            <p className="text-slate-400 mb-8 font-medium">Receive curated recommendations and exclusive access to limited editions.</p>
+            <div className="relative group">
               <input 
                 type="email" 
-                placeholder="Your email" 
-                className="bg-gray-800 border-none rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-primary-500 outline-none"
+                placeholder="Ex: reader@sapien.com" 
+                className="w-full bg-slate-800 border-none rounded-2xl px-6 py-5 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-primary-500 outline-none transition-all"
               />
-              <button className="bg-primary-600 px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors">Join</button>
+              <button className="absolute right-2 top-2 bottom-2 bg-primary-600 px-6 rounded-xl font-black text-sm hover:bg-primary-700 transition-colors shadow-lg">
+                Join
+              </button>
             </div>
           </div>
         </div>
         
-        <div className="border-t border-gray-800 pt-12 flex flex-col items-center text-center gap-8">
-          {/* Designed By Badge - Centered */}
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex items-center gap-3 text-sm">
-              <span className="text-white font-bold uppercase tracking-widest text-[10px]">Designed By</span>
-              <a 
-                href="https://codefons.com" 
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-2.5 bg-[#1c1c1c] border border-gray-800/50 rounded-full py-2 pl-2 pr-5 hover:border-orange-500/50 hover:shadow-[0_0_20px_rgba(249,115,22,0.15)] transition-all duration-300"
-              >
-                <div className="bg-orange-500 rounded-lg p-2 shadow-lg shadow-orange-500/20 group-hover:rotate-12 transition-transform duration-300">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="16 18 22 12 16 6"></polyline>
-                    <polyline points="8 6 2 12 8 18"></polyline>
-                  </svg>
-                </div>
-                <span className="font-bold tracking-tight text-[15px]">
-                  <span className="text-gray-400 group-hover:text-white transition-colors duration-300">Code</span>
-                  <span className="text-orange-500">FONS</span>
-                </span>
-              </a>
+        <div className="border-t border-slate-800/50 pt-12 flex flex-col md:flex-row items-center justify-between gap-10">
+          <div className="flex flex-col md:flex-row items-center gap-8 text-xs font-black text-slate-500 uppercase tracking-widest">
+            <p>© 2026 SapienBooks. Limited Edition.</p>
+            <div className="flex gap-8">
+              <a href="#" className="hover:text-white transition-colors">Privacy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms</a>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-sm text-gray-500">
-            <p>© 2026 SapienBooks. All rights reserved.</p>
-            <div className="flex gap-8">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-            </div>
+          <div className="flex items-center gap-4">
+            <span className="text-slate-500 font-black uppercase tracking-widest text-[10px]">Architected By</span>
+            <a 
+              href="https://codefons.com" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 bg-slate-800/50 border border-slate-700 rounded-2xl py-2.5 px-5 hover:border-orange-500/50 hover:bg-slate-800 transition-all duration-300"
+            >
+              <div className="bg-orange-500 rounded-lg p-2 shadow-lg group-hover:rotate-12 transition-transform">
+                <Sparkles size={14} className="text-white" />
+              </div>
+              <span className="font-black tracking-tight text-sm">
+                <span className="text-slate-400 group-hover:text-white transition-colors">Code</span>
+                <span className="text-orange-500">FONS</span>
+              </span>
+            </a>
           </div>
         </div>
       </div>
