@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Mail, ArrowLeft, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { sql } from '../lib/db';
 import toast from 'react-hot-toast';
 
 const AdminLogin = ({ onLogin, onBack }) => {
@@ -14,12 +14,14 @@ const AdminLogin = ({ onLogin, onBack }) => {
     setLoading(true);
     
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const users = await sql`
+        SELECT * FROM users 
+        WHERE email = ${email} AND password = ${password}
+      `;
 
-      if (error) throw error;
+      if (users.length === 0) {
+        throw new Error('Invalid email or password');
+      }
       
       toast.success('Login successful!');
       onLogin();
@@ -98,7 +100,7 @@ const AdminLogin = ({ onLogin, onBack }) => {
           </form>
           
           <div className="mt-8 pt-8 border-t border-gray-100 text-center">
-            <p className="text-sm text-gray-400 italic">Sign in with your Supabase credentials</p>
+            <p className="text-sm text-gray-400 italic">Sign in with your admin credentials</p>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -9,11 +9,16 @@ import Footer from './components/Footer';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import ContactModal from './components/ContactModal';
+import { initDb } from './lib/db';
 
 function App() {
   const [view, setView] = useState('home'); // 'home', 'collection', 'login', 'admin'
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  useEffect(() => {
+    initDb();
+  }, []);
 
   const navigateTo = (newView) => {
     setView(newView);

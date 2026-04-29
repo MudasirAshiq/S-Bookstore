@@ -1,48 +1,44 @@
-# SapienBooks - Production-Ready Bookstore
+# SapienBooks - Premium Bookstore with Neon DB
 
-A modern, one-page bookstore application with an admin panel, built with React, Vite, Tailwind CSS, and Vercel Serverless Functions.
+A modern, one-page bookstore application with an admin panel, built with React, Vite, Tailwind CSS, and Neon Serverless PostgreSQL.
 
 ## 🚀 Features
-- **Public Site**: Fully responsive one-page design with Hero, Books Grid, About, and Contact sections.
-- **Admin Panel**: Secure dashboard with CRUD operations for managing the book collection.
-- **Backend**: Serverless API routes for efficient data management.
-- **Database**: PostgreSQL (Neon) integration.
-- **UI/UX**: Premium aesthetics with Framer Motion animations and Tailwind CSS.
+- **Public Site**: Fully responsive design with Hero, Books Grid, About, and Contact sections.
+- **Admin Panel**: Secure dashboard with CRUD operations (Add, Edit, Delete books).
+- **Database**: Integrated with Neon Serverless PostgreSQL for real-time updates.
+- **UI/UX**: Premium aesthetics with Framer Motion animations and Tailwind CSS v4.
 
 ## 🛠 Tech Stack
-- **Frontend**: React (Vite)
-- **Backend**: Vercel Serverless Functions (`/api`)
-- **Database**: Neon (PostgreSQL)
-- **Styling**: Tailwind CSS
+- **Frontend**: React 19 (Vite)
+- **Database**: Neon Serverless (PostgreSQL)
+- **Styling**: Tailwind CSS v4
 - **Animations**: Framer Motion
 - **Icons**: Lucide React
 - **Notifications**: React Hot Toast
 
-## 🗄 Database Setup
-Run the following SQL in your Neon console to create the necessary table:
-
-```sql
-CREATE TABLE books (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    author VARCHAR(255) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    discount_price DECIMAL(10, 2),
-    image_url TEXT NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+## ⚙️ Environment Variables
+Create a `.env` file in the root directory:
+```env
+VITE_NEON_DATABASE_URL="your_neon_connection_string"
 ```
 
-## ⚙️ Environment Variables
-Create a `.env` file or set in Vercel:
-- `DATABASE_URL`: Your Neon PostgreSQL connection string.
-
 ## 📦 Local Development
-1. Install root dependencies: `npm install`
-2. Install client dependencies: `cd client && npm install`
-3. Start development server: `npm run dev` (runs the client)
+1. **Clone the repo**
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+3. **Start development server**:
+   ```bash
+   npm run dev
+   ```
+4. **Database Auto-Setup**: The app will automatically create the `books` and `users` tables in your Neon project on the first load.
+
+## 🔐 Admin Access
+By default, the system creates an admin account:
+- **Email**: `admin@sapien.com`
+- **Password**: `admin123`
+*(You can change the password from the Admin Dashboard after logging in)*
 
 ## 🚢 Deployment
-Deploy directly to Vercel. Ensure you set the `DATABASE_URL` environment variable.
-The project is structured to work with Vercel's zero-config, with the root `package.json` handling the client build.
+Deploy to Vercel or Netlify. Ensure you set the `VITE_NEON_DATABASE_URL` environment variable in your deployment settings.

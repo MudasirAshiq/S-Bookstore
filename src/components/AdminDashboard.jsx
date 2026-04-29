@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Edit2, Trash2, LogOut, LayoutGrid, X, Loader2, Image as ImageIcon, BookOpen, Key, Book as BookIcon, Eye, EyeOff, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { supabase } from '../lib/supabase';
+import { sql } from '../lib/db';
 
 const AdminDashboard = ({ onLogout }) => {
   const [books, setBooks] = useState([]);
@@ -30,12 +30,10 @@ const AdminDashboard = ({ onLogout }) => {
   const loadBooks = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('books')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const data = await sql`
+        SELECT * FROM books 
+        ORDER BY created_at DESC
+      `;
       setBooks(data || []);
     } catch (err) {
       toast.error('Failed to load books: ' + err.message);
@@ -60,20 +58,7 @@ const AdminDashboard = ({ onLogout }) => {
   const handleDelete = async (book) => {
     if (window.confirm(`Are you sure you want to delete "${book.title}"?`)) {
       try {
-        // 1. Delete from Database
-        const { error: dbError } = await supabase
-          .from('books')
-          .delete()
-          .eq('id', book.id);
-
-        if (dbError) throw dbError;
-
-        // 2. Try to delete from Storage if it's a supabase URL
-        if (book.image_url && book.image_url.includes('storage/v1/object/public/books')) {
-          const fileName = book.image_url.split('/').pop();
-          await supabase.storage.from('books').remove([fileName]);
-        }
-
+        await sql`DELETE FROM books WHERE id = ${book.id}`;
         toast.success('Book deleted successfully');
         loadBooks();
       } catch (err) {
@@ -82,28 +67,6 @@ const AdminDashboard = ({ onLogout }) => {
     }
   };
 
-  const handleFileUpload = async (file) => {
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError, data } = await supabase.storage
-        .from('books')
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('books')
-        .getPublicUrl(filePath);
-
-      return publicUrl;
-    } catch (error) {
-      toast.error('Error uploading image: ' + error.message);
-      return null;
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -111,36 +74,33 @@ const AdminDashboard = ({ onLogout }) => {
     try {
       let finalImageUrl = formData.image_url;
 
+      // Note: File upload is currently disabled as Neon doesn't have built-in storage.
       if (imageFile) {
-        toast.loading('Uploading image...', { id: 'upload' });
-        const uploadedUrl = await handleFileUpload(imageFile);
-        if (uploadedUrl) {
-          finalImageUrl = uploadedUrl;
-        }
-        toast.dismiss('upload');
+        toast.error('Local file upload is currently disabled. Please use an image URL.');
+        setSubmitting(false);
+        return;
       }
 
-      const bookData = {
-        title: formData.title,
-        author: formData.author,
-        price: parseFloat(formData.price),
-        discount_percent: parseInt(formData.discount_percent) || 0,
-        image_url: finalImageUrl,
-        description: formData.description
-      };
+      const price = parseFloat(formData.price);
+      const discount = parseInt(formData.discount_percent) || 0;
 
       if (currentBook) {
-        const { error } = await supabase
-          .from('books')
-          .update(bookData)
-          .eq('id', currentBook.id);
-        if (error) throw error;
+        await sql`
+          UPDATE books 
+          SET title = ${formData.title}, 
+              author = ${formData.author}, 
+              price = ${price}, 
+              discount_percent = ${discount}, 
+              image_url = ${finalImageUrl}, 
+              description = ${formData.description}
+          WHERE id = ${currentBook.id}
+        `;
         toast.success('Book updated successfully');
       } else {
-        const { error } = await supabase
-          .from('books')
-          .insert([bookData]);
-        if (error) throw error;
+        await sql`
+          INSERT INTO books (title, author, price, discount_percent, image_url, description)
+          VALUES (${formData.title}, ${formData.author}, ${price}, ${discount}, ${finalImageUrl}, ${formData.description})
+        `;
         toast.success('Book added successfully');
       }
       setIsFormOpen(false);
@@ -174,10 +134,13 @@ const AdminDashboard = ({ onLogout }) => {
     }
     
     try {
-      const { error } = await supabase.auth.updateUser({ 
-        password: passwordData.newPassword 
-      });
-      if (error) throw error;
+      // In this simple setup, we're updating all users (which is just one admin)
+      // or we could target by email if we had the current user's email.
+      await sql`
+        UPDATE users 
+        SET password = ${passwordData.newPassword}
+        WHERE email = 'admin@sapien.com'
+      `;
       
       toast.success('Password updated successfully!');
       setIsPasswordModalOpen(false);
