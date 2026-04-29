@@ -27,7 +27,7 @@ const About = () => {
               <img 
                 src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=1000&auto=format&fit=crop" 
                 alt="Boutique Library" 
-                className="w-full h-[600px] object-cover transform hover:scale-105 transition-transform duration-1000"
+                className="w-full h-[350px] md:h-[600px] object-cover transform hover:scale-105 transition-transform duration-1000"
               />
             </div>
             {/* Overlay Card */}
