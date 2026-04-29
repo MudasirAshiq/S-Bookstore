@@ -20,8 +20,12 @@ module.exports = async function handler(req, res) {
       const { rows } = await db.query('SELECT * FROM books ORDER BY created_at DESC');
       return res.status(200).json(rows);
     } catch (error) {
-      console.error(error);
-      return res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Database Query Error:', error);
+      return res.status(500).json({ 
+        error: 'Database Connection Error', 
+        details: error.message,
+        hint: 'Check if DATABASE_URL is set in Vercel settings and if Supabase is reachable.'
+      });
     }
   }
 
