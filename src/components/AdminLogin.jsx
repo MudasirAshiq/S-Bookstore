@@ -103,8 +103,8 @@ const AdminLogin = ({ onLogin, onBack }) => {
           <div className="mt-10 pt-8 border-t border-slate-50 text-center">
             <p className="text-[10px] text-slate-300 font-black uppercase tracking-[0.2em]">Secure Database Connection Active</p>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
     </div>
   );
 };
