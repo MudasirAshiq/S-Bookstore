@@ -59,7 +59,7 @@ const About = () => {
               <div className="h-px w-8 bg-primary-600" />
               <span className="text-primary-600 font-black text-xs uppercase tracking-[0.2em]">Our Story</span>
             </div>
-            <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-8 leading-tight">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 mb-8 leading-tight">
               A Peaceful Place for <span className="text-gradient">Book Lovers.</span>
             </h2>
             <p className="text-lg text-slate-500 mb-10 leading-relaxed font-medium">

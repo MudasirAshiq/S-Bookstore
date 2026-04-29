@@ -63,7 +63,7 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-4xl md:text-6xl font-black text-slate-900 mb-6 leading-tight"
+              className="text-4xl lg:text-5xl font-black text-slate-900 mb-6 leading-tight"
             >
               {featured ? <>Our Top <span className="text-gradient">Picks.</span></> : 'Browse All Books'}
             </motion.h2>

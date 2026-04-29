@@ -29,7 +29,7 @@ const Hero = ({ onBrowseClick }) => {
               <span className="text-primary-700 text-xs font-black uppercase tracking-widest">Our Best Books 2026</span>
             </motion.div>
             
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-black text-slate-900 leading-[0.95] mb-8 tracking-tighter">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-slate-900 leading-[0.95] mb-8 tracking-tighter">
               Find Your Next <br />
               <span className="text-gradient">Favorite Story.</span>
             </h1>
