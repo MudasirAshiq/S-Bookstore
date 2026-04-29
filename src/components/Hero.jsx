@@ -91,37 +91,6 @@ const Hero = ({ onBrowseClick }) => {
                 </div>
               </div>
               
-              {/* Floating Element 1 */}
-              <motion.div 
-                animate={{ y: [0, -20, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -top-10 -right-10 glass p-6 rounded-3xl shadow-2xl"
-              >
-                <div className="bg-accent-100 p-3 rounded-2xl mb-2 text-accent-600">
-                  <Sparkles size={24} />
-                </div>
-                <p className="font-black text-slate-900 leading-none">New Release</p>
-                <p className="text-xs text-slate-400 mt-1">Available Now</p>
-              </motion.div>
-
-              {/* Floating Element 2 */}
-              <motion.div 
-                animate={{ y: [0, 20, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute -bottom-10 -left-10 glass p-6 rounded-3xl shadow-2xl"
-              >
-                <div className="flex -space-x-3 mb-3">
-                  {[1,2,3].map(i => (
-                    <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-200 overflow-hidden">
-                      <img src={`https://i.pravatar.cc/150?img=${i+10}`} alt="User" />
-                    </div>
-                  ))}
-                  <div className="w-10 h-10 rounded-full border-4 border-white bg-primary-600 flex items-center justify-center text-white text-[10px] font-bold">
-                    +5k
-                  </div>
-                </div>
-                <p className="font-black text-slate-900 leading-none">Active Readers</p>
-              </motion.div>
             </div>
           </motion.div>
         </div>
