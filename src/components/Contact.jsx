@@ -29,7 +29,7 @@ const Contact = () => {
               className="text-4xl md:text-6xl font-black text-slate-900 mb-8 leading-tight"
             >
               Let's Start a <span className="text-gradient">Conversation.</span>
-            </h2>
+            </motion.h2>
             <p className="text-lg text-slate-500 mb-12 font-medium leading-relaxed">
               Have a specific request or looking for a rare title? Our literary consultants are here to assist you with personalized recommendations.
             </p>
