@@ -30,24 +30,6 @@ const About = () => {
                 className="w-full h-[350px] md:h-[600px] object-cover transform hover:scale-105 transition-transform duration-1000"
               />
             </div>
-            {/* Overlay Card */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
-              className="absolute -bottom-10 -right-10 glass p-8 rounded-[2.5rem] max-w-[280px] shadow-2xl hidden md:block"
-            >
-              <div className="flex items-center gap-4 mb-4">
-                <div className="bg-primary-600 p-3 rounded-2xl text-white shadow-lg">
-                  <Sparkles size={24} />
-                </div>
-                <p className="font-black text-slate-900 leading-tight">Handpicked <br /> Books</p>
-              </div>
-              <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                We carefully choose every book in our store to make sure you get the best reading experience.
-              </p>
-            </motion.div>
           </motion.div>
 
           <motion.div
