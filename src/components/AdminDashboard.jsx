@@ -11,7 +11,7 @@ import {
   PieChart as RePieChart, Pie, Cell, AreaChart, Area 
 } from 'recharts';
 import toast from 'react-hot-toast';
-import { sql } from '../lib/db';
+import { fetchBooks, createBook, updateBook, deleteBook as deleteBookApi, fetchSettings, updateSettings } from '../lib/api';
 
 const AdminDashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('inventory');
@@ -39,8 +39,8 @@ const AdminDashboard = ({ onLogout }) => {
   const loadBooks = async () => {
     try {
       setLoading(true);
-      const data = await sql`SELECT * FROM books ORDER BY created_at DESC`;
-      setBooks(data || []);
+      const result = await fetchBooks();
+      setBooks(result.data || []);
     } catch (err) {
       toast.error('Failed to load books: ' + err.message);
     } finally {
@@ -50,10 +50,10 @@ const AdminDashboard = ({ onLogout }) => {
 
   const loadSettings = async () => {
     try {
-      const users = await sql`SELECT dashboard_name FROM users WHERE email = 'admin@sapien.com'`;
-      if (users.length > 0 && users[0].dashboard_name) {
-        setDashboardName(users[0].dashboard_name);
-        setSettingsData({ newDashboardName: users[0].dashboard_name });
+      const result = await fetchSettings();
+      if (result.data && result.data.dashboard_name) {
+        setDashboardName(result.data.dashboard_name);
+        setSettingsData({ newDashboardName: result.data.dashboard_name });
       }
     } catch (err) {
       console.error('Failed to load settings:', err);
@@ -74,7 +74,7 @@ const AdminDashboard = ({ onLogout }) => {
   const handleDelete = async (book) => {
     if (window.confirm(`Are you sure you want to delete "${book.title}"?`)) {
       try {
-        await sql`DELETE FROM books WHERE id = ${book.id}`;
+        await deleteBookApi(book.id);
         toast.success('Book deleted successfully');
         loadBooks();
       } catch (err) {
@@ -104,21 +104,21 @@ const AdminDashboard = ({ onLogout }) => {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const price = parseFloat(formData.price);
-      const discount = parseInt(formData.discount_percent) || 0;
+      const payload = {
+        title: formData.title,
+        author: formData.author,
+        price: parseFloat(formData.price),
+        discount_percent: parseInt(formData.discount_percent) || 0,
+        image_url: formData.image_url,
+        description: formData.description,
+        category: formData.category,
+      };
 
       if (currentBook) {
-        await sql`
-          UPDATE books SET title = ${formData.title}, author = ${formData.author}, 
-          price = ${price}, discount_percent = ${discount}, image_url = ${formData.image_url}, 
-          description = ${formData.description}, category = ${formData.category} WHERE id = ${currentBook.id}
-        `;
+        await updateBook(currentBook.id, payload);
         toast.success('Book updated successfully');
       } else {
-        await sql`
-          INSERT INTO books (title, author, price, discount_percent, image_url, description, category)
-          VALUES (${formData.title}, ${formData.author}, ${price}, ${discount}, ${formData.image_url}, ${formData.description}, ${formData.category})
-        `;
+        await createBook(payload);
         toast.success('Book added successfully');
       }
       setIsFormOpen(false); resetForm(); loadBooks();
@@ -142,16 +142,21 @@ const AdminDashboard = ({ onLogout }) => {
         if (passwordData.newPassword !== passwordData.confirmPassword) {
           toast.error("Passwords don't match"); return;
         }
-        await sql`UPDATE users SET password = ${passwordData.newPassword} WHERE email = 'admin@sapien.com'`;
-        toast.success('Password updated successfully');
-        setPasswordData({ newPassword: '', confirmPassword: '' });
       }
 
+      const payload = {};
+      if (settingsData.newDashboardName) payload.dashboard_name = settingsData.newDashboardName;
+      if (passwordData.newPassword) payload.new_password = passwordData.newPassword;
+
+      await updateSettings(payload);
+
       if (settingsData.newDashboardName) {
-        await sql`UPDATE users SET dashboard_name = ${settingsData.newDashboardName} WHERE email = 'admin@sapien.com'`;
         setDashboardName(settingsData.newDashboardName);
-        toast.success('Dashboard settings updated');
       }
+      if (passwordData.newPassword) {
+        setPasswordData({ newPassword: '', confirmPassword: '' });
+      }
+      toast.success('Settings updated successfully');
     } catch (error) {
       toast.error('Update failed: ' + error.message);
     }

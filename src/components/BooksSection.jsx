@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, Loader2, X as ClearIcon, Sparkles, ArrowRight } from 'lucide-react';
-import { sql } from '../lib/db';
+import { fetchBooks } from '../lib/api';
 import BookCard from './BookCard';
 
 const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
@@ -15,14 +15,11 @@ const BooksSection = ({ onContactClick, featured = false, onViewAll }) => {
     const loadBooks = async () => {
       try {
         setLoading(true);
-        const data = await sql`
-          SELECT * FROM books 
-          ORDER BY created_at DESC
-        `;
-        setBooks(data || []);
+        const result = await fetchBooks();
+        setBooks(result.data || []);
       } catch (err) {
         setError('Failed to load books. Please try again later.');
-        console.error('Neon Error:', err);
+        console.error('API Error:', err);
       } finally {
         setLoading(false);
       }

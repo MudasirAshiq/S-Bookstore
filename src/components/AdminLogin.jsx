@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, Mail, ArrowLeft, Eye, EyeOff, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { sql } from '../lib/db';
+import { loginAdmin } from '../lib/api';
 import toast from 'react-hot-toast';
 
 const AdminLogin = ({ onLogin, onBack }) => {
@@ -14,8 +14,7 @@ const AdminLogin = ({ onLogin, onBack }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const users = await sql`SELECT * FROM users WHERE email = ${email} AND password = ${password}`;
-      if (users.length === 0) throw new Error('Authentication failed. Invalid credentials.');
+      await loginAdmin(email, password);
       toast.success('Access Granted. Welcome back.');
       onLogin();
     } catch (error) {
@@ -101,7 +100,7 @@ const AdminLogin = ({ onLogin, onBack }) => {
           </form>
           
           <div className="mt-10 pt-8 border-t border-slate-50 text-center">
-            <p className="text-[10px] text-slate-300 font-black uppercase tracking-[0.2em]">Secure Database Connection Active</p>
+            <p className="text-[10px] text-slate-300 font-black uppercase tracking-[0.2em]">Secure API Connection Active</p>
           </div>
         </div>
       </motion.div>
