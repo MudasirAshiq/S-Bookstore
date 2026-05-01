@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Send, Mail, Phone, MapPin, Sparkles } from 'lucide-react';
+import { BookOpen, Send, Mail, Phone, MapPin, Code } from 'lucide-react';
 
 const Footer = ({ onHomeClick, onCollectionClick }) => {
   return (
@@ -89,19 +89,20 @@ const Footer = ({ onHomeClick, onCollectionClick }) => {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="text-white font-bold uppercase tracking-widest text-[10px]">Designed By</span>
+          <div className="flex items-center gap-3 sm:gap-4">
+            <span className="text-white font-bold uppercase tracking-[0.2em] text-[9px] sm:text-[10px]">Designed By</span>
             <a 
               href="https://codefons.com" 
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-3 bg-slate-800/50 border border-slate-700 rounded-2xl py-2.5 px-5 hover:border-orange-500/50 hover:bg-slate-800 transition-all duration-300"
+              className="group flex items-center gap-2.5 sm:gap-3 bg-slate-800/60 border border-slate-700/80 rounded-2xl py-2 px-4 sm:py-2.5 sm:px-5 hover:border-orange-500/50 hover:bg-slate-800 hover:shadow-[0_0_15px_rgba(249,115,22,0.15)] transition-all duration-300"
             >
-              <div className="bg-orange-500 rounded-lg p-2 shadow-lg group-hover:rotate-12 transition-transform">
-                <Sparkles size={14} className="text-white" />
+              <div className="bg-orange-500 rounded-lg p-1.5 sm:p-2 shadow-lg shadow-orange-500/20 group-hover:rotate-12 transition-transform duration-300">
+                <Code size={13} className="text-white sm:hidden" />
+                <Code size={14} className="text-white hidden sm:block" />
               </div>
-              <span className="font-black tracking-tight text-sm">
-                <span className="text-slate-400 group-hover:text-white transition-colors">Code</span>
+              <span className="font-black tracking-wide text-xs sm:text-sm">
+                <span className="text-slate-400 group-hover:text-white transition-colors duration-300">Code</span>
                 <span className="text-orange-500">FONS</span>
               </span>
             </a>
