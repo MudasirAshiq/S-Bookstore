@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Lock, Mail, ArrowLeft, Eye, EyeOff, Loader2, ShieldCheck, Sparkles } from 'lucide-react';
+import { Lock, Mail, ArrowLeft, Eye, EyeOff, Loader2, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { loginAdmin } from '../lib/api';
 import toast from 'react-hot-toast';
+import sapienLogo from '../assets/sapein logo.png';
 
 const AdminLogin = ({ onLogin, onBack }) => {
   const [email, setEmail] = useState('');
@@ -47,8 +48,8 @@ const AdminLogin = ({ onLogin, onBack }) => {
           <div className="text-center mb-12">
             <div className="relative inline-block">
               <div className="absolute inset-0 bg-primary-400 blur-xl opacity-20 animate-pulse" />
-              <div className="relative bg-slate-900 w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 text-white shadow-xl">
-                <ShieldCheck size={40} />
+              <div className="relative bg-white w-24 h-24 rounded-[2rem] flex items-center justify-center mx-auto mb-6 shadow-xl border border-slate-100">
+                <img src={sapienLogo} alt="Sapien Books" className="h-16 w-auto object-contain" />
               </div>
             </div>
             <h2 className="text-4xl font-black text-slate-900 tracking-tight">Admin <span className="text-primary-600">Login</span></h2>

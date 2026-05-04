@@ -1,5 +1,6 @@
 import React from 'react';
-import { BookOpen, Send, Mail, Phone, MapPin, Code } from 'lucide-react';
+import { Send, Mail, Phone, MapPin } from 'lucide-react';
+import sapienLogo from '../assets/sapein logo.png';
 
 const Footer = ({ onHomeClick, onCollectionClick }) => {
   return (
@@ -10,11 +11,12 @@ const Footer = ({ onHomeClick, onCollectionClick }) => {
       <div className="container mx-auto max-w-7xl px-6 relative z-10">
         <div className="grid lg:grid-cols-12 gap-16 mb-20">
           <div className="lg:col-span-5">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="bg-primary-600 p-2.5 rounded-xl">
-                <BookOpen className="text-white w-6 h-6" />
-              </div>
-              <span className="text-2xl font-black tracking-tight">Sapien<span className="text-primary-400">Books</span></span>
+            <div className="flex items-center mb-8">
+              <img 
+                src={sapienLogo} 
+                alt="Sapien Books" 
+                className="h-10 sm:h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.15)]"
+              />
             </div>
             <p className="text-slate-400 max-w-md leading-relaxed mb-10 text-lg font-medium">
               A friendly home for book lovers. Join our community and find your next great story to read and enjoy.
@@ -90,19 +92,20 @@ const Footer = ({ onHomeClick, onCollectionClick }) => {
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
-            <span className="text-white font-bold uppercase tracking-[0.2em] text-[9px] sm:text-[10px]">Designed By</span>
+            <span className="text-slate-400 font-semibold uppercase tracking-[0.2em] text-[9px] sm:text-[10px]">Designed By</span>
             <a 
               href="https://codefons.com" 
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-2.5 sm:gap-3 bg-slate-800/60 border border-slate-700/80 rounded-2xl py-2 px-4 sm:py-2.5 sm:px-5 hover:border-orange-500/50 hover:bg-slate-800 hover:shadow-[0_0_15px_rgba(249,115,22,0.15)] transition-all duration-300"
+              className="group/badge relative flex items-center gap-2.5 sm:gap-3 bg-[#1e1e24]/80 border border-[#2e2e36] rounded-full py-2 px-4 sm:py-2.5 sm:px-5 hover:border-orange-500/60 hover:bg-[#1e1e24] hover:shadow-[0_0_20px_rgba(249,115,22,0.12),0_0_6px_rgba(249,115,22,0.08)] transition-all duration-400 ease-out"
             >
-              <div className="bg-orange-500 rounded-lg p-1.5 sm:p-2 shadow-lg shadow-orange-500/20 group-hover:rotate-12 transition-transform duration-300">
-                <Code size={13} className="text-white sm:hidden" />
-                <Code size={14} className="text-white hidden sm:block" />
+              {/* Orange icon tile with <> symbol */}
+              <div className="bg-orange-500 rounded-[6px] sm:rounded-[7px] w-[22px] h-[22px] sm:w-[26px] sm:h-[26px] flex items-center justify-center shadow-md shadow-orange-500/25 group-hover/badge:rotate-12 group-hover/badge:shadow-orange-500/40 transition-all duration-400 ease-out">
+                <span className="text-white font-black text-[10px] sm:text-[11px] leading-none select-none" style={{ fontFamily: "'Inter', monospace" }}>&lt;/&gt;</span>
               </div>
-              <span className="font-black tracking-wide text-xs sm:text-sm">
-                <span className="text-slate-400 group-hover:text-white transition-colors duration-300">Code</span>
+              {/* Brand name */}
+              <span className="font-black tracking-[0.08em] text-[11px] sm:text-[13px] leading-none select-none">
+                <span className="text-slate-400 group-hover/badge:text-white transition-colors duration-400 ease-out">Code</span>
                 <span className="text-orange-500">FONS</span>
               </span>
             </a>

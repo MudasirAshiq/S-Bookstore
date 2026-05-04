@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, BookOpen, ShieldCheck } from 'lucide-react';
+import { Menu, X, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import sapienLogo from '../assets/sapein logo.png';
 
 const Navbar = ({ onAdminClick, onHomeClick, onCollectionClick }) => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -47,18 +48,14 @@ const Navbar = ({ onAdminClick, onHomeClick, onCollectionClick }) => {
           : 'bg-transparent h-16'}
       `}>
         <div 
-          className="flex items-center gap-3 cursor-pointer group" 
+          className="flex items-center cursor-pointer group" 
           onClick={() => { onHomeClick(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
         >
-          <div className="relative">
-            <div className="absolute inset-0 bg-primary-400 rounded-xl blur-lg opacity-0 group-hover:opacity-40 transition-opacity"></div>
-            <div className="relative bg-gradient-to-br from-primary-600 to-primary-700 p-2.5 rounded-xl shadow-lg transform group-hover:rotate-12 transition-transform">
-              <BookOpen className="text-white w-6 h-6" />
-            </div>
-          </div>
-          <span className="text-2xl font-black tracking-tight text-slate-900">
-            Sapien<span className="text-primary-600">Books</span>
-          </span>
+          <img 
+            src={sapienLogo} 
+            alt="Sapien Books" 
+            className="h-10 sm:h-11 md:h-12 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+          />
         </div>
 
         {/* Desktop Menu */}

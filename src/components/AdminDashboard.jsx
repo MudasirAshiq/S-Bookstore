@@ -12,6 +12,7 @@ import {
 } from 'recharts';
 import toast from 'react-hot-toast';
 import { fetchBooks, createBook, updateBook, deleteBook as deleteBookApi, fetchSettings, updateSettings } from '../lib/api';
+import sapienLogo from '../assets/sapein logo.png';
 
 const AdminDashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('inventory');
@@ -187,10 +188,14 @@ const AdminDashboard = ({ onLogout }) => {
   const SidebarContent = () => (
     <>
       <div className="flex items-center gap-3 mb-12 px-2">
-        <div className="bg-primary-600 p-2.5 rounded-xl shadow-lg shadow-primary-900/20">
-          <BookIcon size={24} />
+        <div className="bg-white/95 rounded-xl p-1.5 shadow-lg">
+          <img 
+            src={sapienLogo} 
+            alt="Sapien Books" 
+            className="h-7 w-auto object-contain"
+          />
         </div>
-        <span className="text-xl font-black tracking-tight">{dashboardName.split(' ')[0]}<span className="text-primary-400">{dashboardName.split(' ')[1] || 'Dashboard'}</span></span>
+        <span className="text-lg font-black tracking-tight">{dashboardName.split(' ')[0]}<span className="text-primary-400">{dashboardName.split(' ')[1] || 'Dashboard'}</span></span>
       </div>
 
       <nav className="flex-grow space-y-2">
